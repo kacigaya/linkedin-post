@@ -65,7 +65,9 @@ export default function Page() {
         Array.from(node.querySelectorAll("img")).map((img) => img.decode().catch(() => undefined)),
       );
       return await toBlob(node, {
-        pixelRatio: 2,
+        // The card is fluid, so scale the capture to land near a desktop-width
+        // PNG instead of exporting a phone-sized image.
+        pixelRatio: Math.min(4, Math.max(2, 1200 / node.offsetWidth)),
         cacheBust: true,
         backgroundColor: bg.value === "transparent" ? undefined : bg.value,
       });
@@ -139,7 +141,7 @@ export default function Page() {
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-        <form className="order-2 flex flex-col gap-4 lg:order-1" onSubmit={(e) => e.preventDefault()}>
+        <form className="order-2 flex min-w-0 flex-col gap-4 lg:order-1" onSubmit={(e) => e.preventDefault()}>
           <Card>
             <CardHeader>
               <CardTitle>Author</CardTitle>
@@ -283,11 +285,11 @@ export default function Page() {
           </Card>
         </form>
 
-        <div className="order-1 lg:order-2 lg:sticky lg:top-8 lg:self-start">
+        <div className="order-1 min-w-0 lg:order-2 lg:sticky lg:top-8 lg:self-start">
           <div
             ref={frameRef}
             className={`flex justify-center overflow-hidden rounded-2xl ${
-              bg.value === "transparent" ? "" : "p-6 sm:p-10"
+              bg.value === "transparent" ? "" : "p-4 sm:p-10"
             }`}
             style={{ background: bg.value }}
           >

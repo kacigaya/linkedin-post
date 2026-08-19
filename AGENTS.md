@@ -41,6 +41,11 @@ Bun 1.3.14, Node 24.
   `.next/standalone` and `.next/static`. Removing it breaks the image.
 - The post body is a `<textarea>` on purpose. Do not replace it with
   `contenteditable` — free editing is the feature.
+- The post card is fluid (`w-full max-w-[552px]`). Giving it a fixed width sets
+  the mobile grid track and pushes the whole page into horizontal scroll; its
+  narrow-width tweaks use container queries, not viewport breakpoints.
+- Export `pixelRatio` scales with the rendered card width so a phone export is
+  still roughly desktop-sized. The exported layout is whatever is on screen.
 - `PostCard` renders `mode="static"` during export because html-to-image clones
   textareas without their value.
 - No web fonts: the card uses the system sans stack, which keeps the export

@@ -43,7 +43,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
 
   return (
     <article
-      className="li-card w-[552px] max-w-full overflow-hidden rounded-lg border text-left"
+      className="li-card @container w-full max-w-[552px] overflow-hidden rounded-lg border text-left"
       data-theme={post.theme}
       style={{
         background: "var(--li-bg)",
@@ -120,7 +120,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       ) : null}
 
       <div
-        className="mx-4 flex items-center justify-between border-b py-1.5 text-[12px]"
+        className="mx-4 flex flex-wrap items-center justify-between gap-x-2 border-b py-1.5 text-[12px]"
         style={{ borderColor: "var(--li-line)", color: "var(--li-muted)" }}
       >
         <span className="flex items-center gap-1">
@@ -176,7 +176,9 @@ function Action({ icon, label }: { icon: React.ReactNode; label: string }) {
       style={{ color: "var(--li-muted)" }}
     >
       {icon}
-      <span>{label}</span>
+      {/* LinkedIn drops these labels on a narrow feed; a container query keeps
+          the decision tied to the card, not the viewport. */}
+      <span className="hidden @[24rem]:inline">{label}</span>
     </span>
   );
 }
