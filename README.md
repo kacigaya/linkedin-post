@@ -36,8 +36,20 @@ Requires Bun 1.3 and Node 24.
 | --- | --- |
 | `app/page.tsx` | Editor state, control panel, PNG export |
 | `app/components/PostCard.tsx` | The card that gets rendered to PNG |
-| `app/components/icons.tsx` | Inline SVG icons (no icon dependency) |
+| `app/components/icons.tsx` | Inline SVG icons for the LinkedIn card |
 | `app/lib/format.ts` | Count formatting, hashtag splitting, file reading |
+| `components/ui/*` | [Coss UI](https://coss.com/ui) components, owned in-repo |
+
+The control panel is built from Coss UI (Base UI + Tailwind), installed through
+the shadcn CLI against the `@coss` registry declared in `components.json`:
+
+```sh
+bunx --bun shadcn@latest add @coss/button @coss/input @coss/textarea
+```
+
+The post card itself deliberately does **not** use them. It carries LinkedIn's
+own palette and type scale in `.li-card`, so the exported PNG never inherits the
+app theme.
 
 Export goes through [`html-to-image`](https://github.com/bubkoo/html-to-image).
 Because a cloned `<textarea>` serializes without its value, the card swaps the

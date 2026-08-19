@@ -1,7 +1,8 @@
 # linkedin-post
 
-LinkedIn post mockup generator. Next.js App Router, React 19, Tailwind 4, Bun.
-Entirely client-side: no API routes, no database, no environment variables.
+LinkedIn post mockup generator. Next.js App Router, React 19, Tailwind 4, Bun,
+Coss UI (Base UI) for the control panel. Entirely client-side: no API routes, no
+database, no environment variables.
 
 ## Commands
 
@@ -23,6 +24,16 @@ Bun 1.3.14, Node 24.
 - Dokploy domain entry must stay `certificateType: none` and `https: false`;
   Caddy owns TLS. See `/home/ubuntu/DOKPLOY.md` on the host.
 - Pushes to `main` trigger a Dokploy rebuild through the hooks endpoint.
+
+## UI
+
+- Panel components live in `components/ui`, added with
+  `bunx --bun shadcn@latest add @coss/<name>` (registry in `components.json`).
+  They are owned in-repo — edit them directly rather than wrapping them.
+- Semantic tokens (`background`, `card`, `border`, `muted-foreground`, `primary`)
+  come from `@coss/colors-neutral` at the bottom of `app/globals.css`.
+- `.li-card` in `app/globals.css` is a separate, fixed palette for the post card.
+  Keep it independent of the app theme so exports stay deterministic.
 
 ## Constraints worth keeping
 
