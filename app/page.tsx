@@ -31,6 +31,7 @@ const DEFAULT_POST: Post = {
   timestamp: "2h",
   body: "I shipped a LinkedIn post generator this weekend.\n\nThe part that annoyed me about every other one: the preview text was locked. Backspace did nothing, line breaks were swallowed.\n\nSo this one is a plain textarea. Type, delete, break lines, paste — it all just works.\n\n#buildinpublic #webdev",
   avatar: null,
+  avatarShape: "circle",
   image: null,
   verified: true,
   clamp: false,
@@ -170,6 +171,17 @@ export default function Page() {
                   />
                 </Field>
               </div>
+              <Field>
+                <FieldLabel>Photo shape</FieldLabel>
+                <Segmented
+                  value={post.avatarShape}
+                  options={[
+                    { value: "circle", label: "Round" },
+                    { value: "square", label: "Square" },
+                  ]}
+                  onChange={(v) => set("avatarShape", v)}
+                />
+              </Field>
               <CheckboxField
                 label="Verified badge"
                 checked={post.verified}

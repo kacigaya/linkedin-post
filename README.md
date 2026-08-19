@@ -12,6 +12,7 @@ intended — which is the one thing most generators of this kind get wrong.
 
 - Edit the post body inline in the preview, or in the form on the left.
 - Set name, headline, timestamp, verified badge, and profile photo.
+- Switch the photo between round (member) and square (company page).
 - Attach an image to the post.
 - Fake the reaction, comment, and repost counts.
 - Switch the card between LinkedIn's light and dark themes.

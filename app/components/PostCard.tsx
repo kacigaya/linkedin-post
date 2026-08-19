@@ -21,6 +21,8 @@ export type Post = {
   timestamp: string;
   body: string;
   avatar: string | null;
+  /** Circle for a person, square for a company page. */
+  avatarShape: "circle" | "square";
   image: string | null;
   verified: boolean;
   clamp: boolean;
@@ -149,19 +151,22 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
 }
 
 function Avatar({ post }: { post: Post }) {
+  // LinkedIn rounds member photos and leaves company logos square.
+  const shape = post.avatarShape === "square" ? "rounded-[4px]" : "rounded-full";
+
   if (post.avatar) {
     // eslint-disable-next-line @next/next/no-img-element
     return (
       <img
         src={post.avatar}
         alt=""
-        className="h-12 w-12 shrink-0 rounded-full object-cover"
+        className={`h-12 w-12 shrink-0 object-cover ${shape}`}
       />
     );
   }
   return (
     <div
-      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[16px] font-semibold text-white"
+      className={`flex h-12 w-12 shrink-0 items-center justify-center text-[16px] font-semibold text-white ${shape}`}
       style={{ background: "#0a66c2" }}
     >
       {initials(post.name)}
