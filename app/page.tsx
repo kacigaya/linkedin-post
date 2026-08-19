@@ -8,11 +8,9 @@ import {
   Copy,
   Download,
   ImageDown,
-  Moon,
   PenLine,
   Plus,
   RotateCcw,
-  Sun,
   Upload,
   UserRound,
   X,
@@ -145,17 +143,16 @@ export default function Page() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="font-semibold text-2xl tracking-tight">LinkedIn post generator</h1>
-          <p className="mt-1 max-w-prose text-muted-foreground text-sm">
-            Write the post, tweak the details, export a PNG. Everything stays in your browser — no
-            upload, no account. The post text is a real textarea, so editing behaves normally.
-          </p>
-        </div>
-        <ThemeToggle />
-      </header>
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8">
+      <div className="mb-8">
+        <h1 className="font-heading font-semibold text-2xl tracking-tight">
+          Write a post, export the picture
+        </h1>
+        <p className="mt-1 max-w-prose text-muted-foreground text-sm">
+          Everything stays in your browser — no upload, no account. The post text is a real
+          textarea, so editing behaves normally.
+        </p>
+      </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
         <form className="order-2 flex min-w-0 flex-col gap-4 lg:order-1" onSubmit={(e) => e.preventDefault()}>
@@ -514,31 +511,5 @@ function FilePicker({
         </Button>
       ) : null}
     </div>
-  );
-}
-
-function ThemeToggle() {
-  // Starts false to match the server render; the head script may already have
-  // set the class, so read the real value after hydration.
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"));
-  }, []);
-
-  return (
-    <Button
-      variant="outline"
-      onClick={() => {
-        const next = !dark;
-        setDark(next);
-        document.documentElement.classList.toggle("dark", next);
-        try {
-          localStorage.setItem("theme", next ? "dark" : "light");
-        } catch {}
-      }}
-    >
-      {dark ? <Sun /> : <Moon />}
-      {dark ? "Light mode" : "Dark mode"}
-    </Button>
   );
 }

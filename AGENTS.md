@@ -4,6 +4,10 @@ LinkedIn post mockup generator. Next.js App Router, React 19, Tailwind 4, Bun,
 Coss UI (Base UI) for the control panel. Entirely client-side: no API routes, no
 database, no environment variables.
 
+Design system, fonts, theming, and README structure mirror
+`/home/ubuntu/projects/muzik` (`kacigaya/muzik`). Check that repo before
+changing tokens or chrome.
+
 ## Commands
 
 ```sh
@@ -30,8 +34,15 @@ Bun 1.3.14, Node 24.
 - Panel components live in `components/ui`, added with
   `bunx --bun shadcn@latest add @coss/<name>` (registry in `components.json`).
   They are owned in-repo — edit them directly rather than wrapping them.
-- Semantic tokens (`background`, `card`, `border`, `muted-foreground`, `primary`)
-  come from `@coss/colors-neutral` at the bottom of `app/globals.css`.
+- Semantic tokens live at the top of `app/globals.css`: coss's neutral set
+  shifted to the stone scale in light and to `#161616` / `#1b1b1b` in dark,
+  copied from Muzik. `--brand` tracks `--primary`.
+- Fonts are Inter and Geist Mono through `next/font/google`, so the Docker build
+  needs network access. The post card overrides them with the system stack.
+- Theming is `next-themes` (`attribute="class"`, system default). Anything
+  derived from `resolvedTheme` must wait for a mounted flag, and the theme icons
+  swap in CSS — deriving markup from it directly breaks hydration.
+- `SiteNav` is Muzik's top bar: one rounded-xl `bg-card/80` strip, `max-w-6xl`.
 - `.li-card` in `app/globals.css` is a separate, fixed palette for the post card.
   Keep it independent of the app theme so exports stay deterministic.
 
@@ -54,5 +65,15 @@ Bun 1.3.14, Node 24.
   caret drift.
 - `PostCard` renders `mode="static"` during export because html-to-image clones
   textareas without their value.
-- No web fonts: the card uses the system sans stack, which keeps the export
-  deterministic and the Docker build offline-safe.
+- The post card sets the system sans stack inline. It must not inherit Inter,
+  or the export stops matching what LinkedIn renders.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
