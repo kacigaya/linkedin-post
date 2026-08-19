@@ -1,18 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  CommentIcon,
-  DotsIcon,
-  GlobeIcon,
-  InsightReaction,
-  LikeReaction,
-  LoveReaction,
-  RepostIcon,
-  SendIcon,
-  ThumbIcon,
-  VerifiedIcon,
-} from "./icons";
+import { Ellipsis, Globe, MessageCircle, Repeat2, Send, ThumbsUp } from "lucide-react";
+import { InsightReaction, LikeReaction, LoveReaction, VerifiedIcon } from "./icons";
 import { formatCount, initials, segments } from "../lib/format";
 
 export type Post = {
@@ -73,11 +63,11 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
           >
             <span>{post.timestamp}</span>
             <span aria-hidden="true">·</span>
-            <GlobeIcon className="h-3 w-3" />
+            <Globe className="h-3 w-3" strokeWidth={2.25} />
           </p>
         </div>
         <span className="mt-1 shrink-0" style={{ color: "var(--li-muted)" }} aria-hidden="true">
-          <DotsIcon className="h-4 w-4" />
+          <Ellipsis className="h-4 w-4" />
         </span>
       </header>
 
@@ -141,10 +131,10 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       </div>
 
       <div className="flex items-center justify-between px-2 py-1">
-        <Action icon={<ThumbIcon className="h-5 w-5" />} label="Like" />
-        <Action icon={<CommentIcon className="h-5 w-5" />} label="Comment" />
-        <Action icon={<RepostIcon className="h-5 w-5" />} label="Repost" />
-        <Action icon={<SendIcon className="h-5 w-5" />} label="Send" />
+        <Action icon={<ThumbsUp className="h-5 w-5" />} label="Like" />
+        <Action icon={<MessageCircle className="h-5 w-5" />} label="Comment" />
+        <Action icon={<Repeat2 className="h-5 w-5" />} label="Repost" />
+        <Action icon={<Send className="h-5 w-5" />} label="Send" />
       </div>
     </article>
   );

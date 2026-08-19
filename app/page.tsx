@@ -2,7 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
-import { Copy, Download, Moon, RotateCcw, Sun, Upload, X } from "lucide-react";
+import {
+  ChartNoAxesColumn,
+  Copy,
+  Download,
+  ImageDown,
+  Moon,
+  PenLine,
+  RotateCcw,
+  Sun,
+  Upload,
+  UserRound,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -145,7 +157,10 @@ export default function Page() {
         <form className="order-2 flex min-w-0 flex-col gap-4 lg:order-1" onSubmit={(e) => e.preventDefault()}>
           <Card>
             <CardHeader>
-              <CardTitle>Author</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <UserRound className="size-4 text-muted-foreground" />
+                Author
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Field>
@@ -192,7 +207,10 @@ export default function Page() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Post</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <PenLine className="size-4 text-muted-foreground" />
+                Post
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Field>
@@ -228,7 +246,10 @@ export default function Page() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Engagement</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <ChartNoAxesColumn className="size-4 text-muted-foreground" />
+                Engagement
+              </CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-3 gap-3">
               <Field>
@@ -248,7 +269,10 @@ export default function Page() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Export</CardTitle>
+              <CardTitle className="flex items-center gap-2">
+                <ImageDown className="size-4 text-muted-foreground" />
+                Export
+              </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <Field>

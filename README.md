@@ -37,7 +37,7 @@ Requires Bun 1.3 and Node 24.
 | --- | --- |
 | `app/page.tsx` | Editor state, control panel, PNG export |
 | `app/components/PostCard.tsx` | The card that gets rendered to PNG |
-| `app/components/icons.tsx` | Inline SVG icons for the LinkedIn card |
+| `app/components/icons.tsx` | The verified badge and reaction pills (no lucide equivalent) |
 | `app/lib/format.ts` | Count formatting, hashtag splitting, file reading |
 | `components/ui/*` | [Coss UI](https://coss.com/ui) components, owned in-repo |
 
