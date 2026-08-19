@@ -10,6 +10,13 @@
 }
 
 @layer base {
+  /* From @coss/style's base layer, which we do not install because it also
+     pulls in web fonts. Without it Tailwind 4 leaves border-color at
+     currentColor and every bordered component draws a near-black outline. */
+  * {
+    @apply border-border outline-ring/50;
+  }
+
   :root {
     color-scheme: light;
   }
