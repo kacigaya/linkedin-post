@@ -1,11 +1,12 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
 import { PostCard, type Post } from "./components/PostCard";
 import { readAsDataUrl } from "./lib/format";
 
 const LINKEDIN_MAX = 3000;
+const MAX_UPLOAD_BYTES = 8_000_000;
 
 const BACKGROUNDS = [
   { id: "none", label: "None", value: "transparent" },
@@ -49,6 +50,10 @@ export default function Page() {
     setExporting(true);
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     try {
+      // A just-picked image may still be decoding; html-to-image would skip it.
+      await Promise.all(
+        Array.from(node.querySelectorAll("img")).map((img) => img.decode().catch(() => undefined)),
+      );
       return await toBlob(node, {
         pixelRatio: 2,
         cacheBust: true,
@@ -60,7 +65,13 @@ export default function Page() {
   }, [bg.value]);
 
   async function download() {
-    const blob = await render();
+    let blob: Blob | null;
+    try {
+      blob = await render();
+    } catch {
+      setStatus("Could not render the image — try a smaller attachment");
+      return;
+    }
     if (!blob) return;
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -72,9 +83,15 @@ export default function Page() {
   }
 
   async function copy() {
+    let blob: Blob | null;
     try {
-      const blob = await render();
-      if (!blob) return;
+      blob = await render();
+    } catch {
+      setStatus("Could not render the image — try a smaller attachment");
+      return;
+    }
+    if (!blob) return;
+    try {
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
       setStatus("Image copied to clipboard");
     } catch {
@@ -84,7 +101,18 @@ export default function Page() {
 
   async function pick(key: "avatar" | "image", file: File | undefined) {
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setStatus("That file is not an image");
+      return;
+    }
+    // Large photos become multi-megabyte data URLs that the export canvas
+    // cannot allocate, so refuse them instead of freezing the tab.
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setStatus(`Image is too large — keep it under ${MAX_UPLOAD_BYTES / 1_000_000} MB`);
+      return;
+    }
     set(key, await readAsDataUrl(file));
+    setStatus(null);
   }
 
   return (
@@ -222,6 +250,7 @@ export default function Page() {
             <PostCard
               post={post}
               mode={exporting ? "static" : "edit"}
+              maxLength={LINKEDIN_MAX}
               onBodyChange={(v) => set("body", v)}
             />
           </div>
@@ -343,7 +372,10 @@ function FileInput({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={(e) => onPick(e.target.files?.[0])}
+        onChange={(e) => {
+          onPick(e.target.files?.[0]);
+          e.target.value = "";
+        }}
       />
       <button type="button" className={`${ghostButton} flex-1 py-1.5 text-xs`} onClick={() => ref.current?.click()}>
         {has ? "Replace" : "Upload"}
@@ -365,9 +397,12 @@ function FileInput({
 }
 
 function ThemeToggle() {
-  const [dark, setDark] = useState(() =>
-    typeof document === "undefined" ? false : document.documentElement.classList.contains("dark"),
-  );
+  // Starts false to match the server render; the head script may already have
+  // set the class, so read the real value after hydration.
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"));
+  }, []);
   return (
     <button
       type="button"

@@ -34,10 +34,11 @@ type Props = {
   post: Post;
   /** "static" swaps the body textarea for plain markup so PNG export captures the text. */
   mode: "edit" | "static";
+  maxLength: number;
   onBodyChange: (value: string) => void;
 };
 
-export function PostCard({ post, mode, onBodyChange }: Props) {
+export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
   const bodyStyle = "text-[14px] leading-[20px] whitespace-pre-wrap break-words";
 
   return (
@@ -80,7 +81,13 @@ export function PostCard({ post, mode, onBodyChange }: Props) {
 
       <div className="px-4 pb-3 pt-2">
         {mode === "edit" ? (
-          <BodyEditor value={post.body} onChange={onBodyChange} className={bodyStyle} />
+          <BodyEditor
+            value={post.body}
+            onChange={onBodyChange}
+            maxLength={maxLength}
+            clamp={post.clamp}
+            className={bodyStyle}
+          />
         ) : (
           <p className={`${bodyStyle} ${post.clamp ? "line-clamp-3" : ""}`}>
             {segments(post.body).map((seg, i) =>
@@ -94,7 +101,7 @@ export function PostCard({ post, mode, onBodyChange }: Props) {
             )}
           </p>
         )}
-        {post.clamp ? (
+        {post.clamp && mode === "static" ? (
           <button
             type="button"
             className="mt-0.5 text-[14px]"
@@ -178,10 +185,14 @@ function Action({ icon, label }: { icon: React.ReactNode; label: string }) {
 function BodyEditor({
   value,
   onChange,
+  maxLength,
+  clamp,
   className,
 }: {
   value: string;
   onChange: (value: string) => void;
+  maxLength: number;
+  clamp: boolean;
   className: string;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -190,17 +201,20 @@ function BodyEditor({
     const el = ref.current;
     if (!el) return;
     el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
-  }, [value]);
+    // Three lines of 20px matches the line-clamp the export applies, so the
+    // editor never shows more text than the PNG will.
+    el.style.height = clamp ? `${Math.min(el.scrollHeight, 60)}px` : `${el.scrollHeight}px`;
+  }, [value, clamp]);
 
   return (
     <textarea
       ref={ref}
       value={value}
+      maxLength={maxLength}
       onChange={(e) => onChange(e.target.value)}
       aria-label="Post text"
       spellCheck={false}
-      className={`${className} block w-full resize-none rounded-sm bg-transparent p-0 outline-none`}
+      className={`${className} block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none`}
       style={{ color: "var(--li-text)", fontFamily: "inherit" }}
     />
   );

@@ -15,6 +15,8 @@ test("initials take the first two words", () => {
   expect(initials("Gaya Kaci")).toBe("GK");
   expect(initials("  ada  lovelace  byron ")).toBe("AL");
   expect(initials("")).toBe("?");
+  // Non-BMP first characters must not be split into a lone surrogate.
+  expect(initials("🚀 launcher")).toBe("🚀L");
 });
 
 test("segments isolate hashtags and mentions", () => {
