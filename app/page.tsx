@@ -42,7 +42,7 @@ const DEFAULT_POST: Post = {
   name: "Gaya Kaci",
   headline: "Cybersecurity engineer · building small, sharp tools",
   timestamp: "2h",
-  body: "I shipped a LinkedIn post generator this weekend.\n\nThe part that annoyed me about every other one: the preview text was locked. Backspace did nothing, line breaks were swallowed.\n\nSo this one is a plain textarea. Type, delete, break lines, paste — it all just works.\n\n#buildinpublic #webdev",
+  body: "I rebuilt the post preview this weekend.\n\nEvery generator I tried locked the preview text. Backspace did nothing and line breaks were swallowed.\n\nThis one is a plain textarea, so typing, deleting and pasting all work.\n\n#buildinpublic #webdev",
   avatar: null,
   avatarShape: "circle",
   mentions: [],
@@ -96,7 +96,7 @@ export default function Page() {
     try {
       blob = await render();
     } catch {
-      setStatus("Could not render the image — try a smaller attachment");
+      setStatus("Could not render the image. Try a smaller attachment.");
       return;
     }
     if (!blob) return;
@@ -106,7 +106,7 @@ export default function Page() {
     a.download = "linkedin-post.png";
     a.click();
     URL.revokeObjectURL(url);
-    setStatus("PNG downloaded");
+    setStatus("Saved as linkedin-post.png.");
   }
 
   async function copy() {
@@ -114,28 +114,28 @@ export default function Page() {
     try {
       blob = await render();
     } catch {
-      setStatus("Could not render the image — try a smaller attachment");
+      setStatus("Could not render the image. Try a smaller attachment.");
       return;
     }
     if (!blob) return;
     try {
       await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      setStatus("Image copied to clipboard");
+      setStatus("Copied to the clipboard.");
     } catch {
-      setStatus("Clipboard blocked by the browser — use Download instead");
+      setStatus("The browser blocked the clipboard. Use Download instead.");
     }
   }
 
   async function pick(key: "avatar" | "image", file: File | undefined) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setStatus("That file is not an image");
+      setStatus("That file is not an image.");
       return;
     }
     // Large photos become multi-megabyte data URLs that the export canvas
     // cannot allocate, so refuse them instead of freezing the tab.
     if (file.size > MAX_UPLOAD_BYTES) {
-      setStatus(`Image is too large — keep it under ${MAX_UPLOAD_BYTES / 1_000_000} MB`);
+      setStatus(`That image is over ${MAX_UPLOAD_BYTES / 1_000_000} MB. Pick a smaller one.`);
       return;
     }
     set(key, await readAsDataUrl(file));
@@ -146,11 +146,11 @@ export default function Page() {
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8">
       <div className="mb-8">
         <h1 className="font-heading font-semibold text-2xl tracking-tight">
-          Write a post, export the picture
+          Write the post, download the picture
         </h1>
         <p className="mt-1 max-w-prose text-muted-foreground text-sm">
-          Everything stays in your browser — no upload, no account. The post text is a real
-          textarea, so editing behaves normally.
+          Nothing is uploaded and there is no account. The post text is a real textarea, so
+          Backspace, Enter and paste work the way they do everywhere else.
         </p>
       </div>
 
@@ -242,7 +242,7 @@ export default function Page() {
                 onChange={(next) => set("mentions", next)}
               />
               <CheckboxField
-                label="Truncate with “…see more”"
+                label={'Cut it off with "…see more"'}
                 checked={post.clamp}
                 onChange={(v) => set("clamp", v)}
               />
@@ -312,7 +312,7 @@ export default function Page() {
                   variant="ghost"
                   onClick={() => {
                     setPost(DEFAULT_POST);
-                    setStatus("Reset");
+                    setStatus("Back to the defaults.");
                   }}
                 >
                   <RotateCcw />
@@ -342,7 +342,7 @@ export default function Page() {
             />
           </div>
           <p className="mt-3 text-muted-foreground text-xs">
-            Click the post text to edit it directly in the preview.
+            Click the post text to edit it here.
           </p>
         </div>
       </div>
@@ -396,7 +396,7 @@ function MentionsField({
             }
           }}
         />
-        <Button variant="outline" size="icon" aria-label="Add tag" onClick={add}>
+        <Button variant="outline" size="icon" aria-label="Add tagged name" onClick={add}>
           <Plus />
         </Button>
       </div>
@@ -420,8 +420,7 @@ function MentionsField({
         </ul>
       ) : null}
       <FieldDescription>
-        Each name is highlighted wherever it appears in the post text, the way LinkedIn renders a
-        tag.
+        Each name is highlighted wherever it appears in the post, the way LinkedIn draws a tag.
       </FieldDescription>
     </Field>
   );

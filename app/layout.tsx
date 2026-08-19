@@ -10,11 +10,11 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono"
 export const metadata: Metadata = {
   title: "LinkedIn Post Generator",
   description:
-    "Write a LinkedIn post mockup, edit every word freely, and download it as a PNG. Runs entirely in your browser.",
+    "Write a LinkedIn post mockup, edit it like any other text field, and download it as a PNG. Runs in your browser.",
   robots: { index: true, follow: true },
   openGraph: {
     title: "LinkedIn Post Generator",
-    description: "Design a LinkedIn post mockup and export it as a PNG. No upload, no account.",
+    description: "Build a LinkedIn post mockup and export it as a PNG. No upload, no account.",
     type: "website",
   },
 };
