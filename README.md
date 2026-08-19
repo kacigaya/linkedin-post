@@ -13,6 +13,7 @@ intended — which is the one thing most generators of this kind get wrong.
 - Edit the post body inline in the preview, or in the form on the left.
 - Set name, headline, timestamp, verified badge, and profile photo.
 - Switch the photo between round (member) and square (company page).
+- Tag people and pages: add a name and it renders in LinkedIn's link blue everywhere it appears in the text.
 - Attach an image to the post.
 - Fake the reaction, comment, and repost counts.
 - Switch the card between LinkedIn's light and dark themes.
@@ -51,6 +52,12 @@ bunx --bun shadcn@latest add @coss/button @coss/input @coss/textarea
 The post card itself deliberately does **not** use them. It carries LinkedIn's
 own palette and type scale in `.li-card`, so the exported PNG never inherits the
 app theme.
+
+While you type, a highlight layer sits under the transparent textarea so tags
+and hashtags are colored during editing. It renders tagged names at regular
+weight on purpose — bold glyphs are wider, and a bold overlay would wrap
+differently from the textarea and pull the caret off the text. The export bolds
+them, as LinkedIn does.
 
 Export goes through [`html-to-image`](https://github.com/bubkoo/html-to-image).
 Because a cloned `<textarea>` serializes without its value, the card swaps the

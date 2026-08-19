@@ -13,6 +13,8 @@ export type Post = {
   avatar: string | null;
   /** Circle for a person, square for a company page. */
   avatarShape: "circle" | "square";
+  /** People or pages tagged in the post; highlighted wherever they appear. */
+  mentions: string[];
   image: string | null;
   verified: boolean;
   clamp: boolean;
@@ -75,6 +77,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
         {mode === "edit" ? (
           <BodyEditor
             value={post.body}
+            mentions={post.mentions}
             onChange={onBodyChange}
             maxLength={maxLength}
             clamp={post.clamp}
@@ -82,15 +85,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
           />
         ) : (
           <p className={`${bodyStyle} ${post.clamp ? "line-clamp-3" : ""}`}>
-            {segments(post.body).map((seg, i) =>
-              seg.kind === "tag" ? (
-                <span key={i} style={{ color: "var(--li-link)", fontWeight: 600 }}>
-                  {seg.text}
-                </span>
-              ) : (
-                <span key={i}>{seg.text}</span>
-              ),
-            )}
+            <Highlighted text={post.body} mentions={post.mentions} />
           </p>
         )}
         {post.clamp && mode === "static" ? (
@@ -179,14 +174,54 @@ function Action({ icon, label }: { icon: React.ReactNode; label: string }) {
 }
 
 /** Plain textarea: Backspace, Delete, Enter and IME input all behave natively. */
+/**
+ * Post text with hashtags in link blue and tagged names in link blue.
+ *
+ * `bold` is off behind the editor: bold glyphs are wider, so a bold overlay
+ * wraps and ends lines differently from the plain textarea above it, which
+ * drags the caret away from the text it is supposed to sit next to (~17px over
+ * a line with two tags). The exported card sets it, matching LinkedIn.
+ */
+function Highlighted({
+  text,
+  mentions,
+  bold = true,
+}: {
+  text: string;
+  mentions: string[];
+  bold?: boolean;
+}) {
+  return (
+    <>
+      {segments(text, mentions).map((seg, i) =>
+        seg.kind === "text" ? (
+          <span key={i}>{seg.text}</span>
+        ) : (
+          <span
+            key={i}
+            style={{
+              color: "var(--li-link)",
+              fontWeight: bold && seg.kind === "mention" ? 600 : 400,
+            }}
+          >
+            {seg.text}
+          </span>
+        ),
+      )}
+    </>
+  );
+}
+
 function BodyEditor({
   value,
+  mentions,
   onChange,
   maxLength,
   clamp,
   className,
 }: {
   value: string;
+  mentions: string[];
   onChange: (value: string) => void;
   maxLength: number;
   clamp: boolean;
@@ -203,16 +238,28 @@ function BodyEditor({
     el.style.height = clamp ? `${Math.min(el.scrollHeight, 60)}px` : `${el.scrollHeight}px`;
   }, [value, clamp]);
 
+  // The textarea keeps every native editing behaviour but paints its text
+  // transparent; an identically laid out layer underneath draws the colored
+  // hashtags and tags, so editing looks like the exported PNG.
   return (
-    <textarea
-      ref={ref}
-      value={value}
-      maxLength={maxLength}
-      onChange={(e) => onChange(e.target.value)}
-      aria-label="Post text"
-      spellCheck={false}
-      className={`${className} block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none`}
-      style={{ color: "var(--li-text)", fontFamily: "inherit" }}
-    />
+    <div className="relative overflow-hidden">
+      <div
+        aria-hidden="true"
+        className={`${className} pointer-events-none absolute inset-0 select-none`}
+        style={{ color: "var(--li-text)" }}
+      >
+        <Highlighted text={value} mentions={mentions} bold={false} />
+      </div>
+      <textarea
+        ref={ref}
+        value={value}
+        maxLength={maxLength}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Post text"
+        spellCheck={false}
+        className={`${className} relative block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none`}
+        style={{ color: "transparent", caretColor: "var(--li-text)", fontFamily: "inherit" }}
+      />
+    </div>
   );
 }

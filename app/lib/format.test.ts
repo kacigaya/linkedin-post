@@ -19,7 +19,7 @@ test("initials take the first two words", () => {
   expect(initials("🚀 launcher")).toBe("🚀L");
 });
 
-test("segments isolate hashtags and mentions", () => {
+test("segments isolate hashtags and @tokens", () => {
   expect(segments("hi #dev and @ada!")).toEqual([
     { text: "hi ", kind: "text" },
     { text: "#dev", kind: "tag" },
@@ -29,4 +29,37 @@ test("segments isolate hashtags and mentions", () => {
   ]);
   expect(segments("plain")).toEqual([{ text: "plain", kind: "text" }]);
   expect(segments("")).toEqual([]);
+});
+
+test("segments highlight tagged names wherever they appear", () => {
+  const text = "Alongside Amel Skendraoui and Amel Skendraoui again";
+  expect(segments(text, ["Amel Skendraoui"])).toEqual([
+    { text: "Alongside ", kind: "text" },
+    { text: "Amel Skendraoui", kind: "mention" },
+    { text: " and ", kind: "text" },
+    { text: "Amel Skendraoui", kind: "mention" },
+    { text: " again", kind: "text" },
+  ]);
+});
+
+test("the longest tagged name wins over a shorter overlapping one", () => {
+  expect(segments("thanks Micro Club usthb", ["Micro Club", "Micro Club usthb"])).toEqual([
+    { text: "thanks ", kind: "text" },
+    { text: "Micro Club usthb", kind: "mention" },
+  ]);
+});
+
+test("tagged names match case-insensitively but keep the post's casing", () => {
+  expect(segments("ping MAHDI debbah", ["Mahdi DEBBAH"])).toEqual([
+    { text: "ping ", kind: "text" },
+    { text: "MAHDI debbah", kind: "mention" },
+  ]);
+});
+
+test("hashtags still win outside a tagged name, and blanks are ignored", () => {
+  expect(segments("#ctf with Rania", ["  ", "Rania"])).toEqual([
+    { text: "#ctf", kind: "tag" },
+    { text: " with ", kind: "text" },
+    { text: "Rania", kind: "mention" },
+  ]);
 });

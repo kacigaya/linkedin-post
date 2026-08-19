@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
 import {
+  AtSign,
   ChartNoAxesColumn,
   Copy,
   Download,
   ImageDown,
   Moon,
   PenLine,
+  Plus,
   RotateCcw,
   Sun,
   Upload,
@@ -18,7 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Badge } from "@/components/ui/badge";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -44,6 +47,7 @@ const DEFAULT_POST: Post = {
   body: "I shipped a LinkedIn post generator this weekend.\n\nThe part that annoyed me about every other one: the preview text was locked. Backspace did nothing, line breaks were swallowed.\n\nSo this one is a plain textarea. Type, delete, break lines, paste — it all just works.\n\n#buildinpublic #webdev",
   avatar: null,
   avatarShape: "circle",
+  mentions: [],
   image: null,
   verified: true,
   clamp: false,
@@ -236,6 +240,10 @@ export default function Page() {
                   label="attached image"
                 />
               </Field>
+              <MentionsField
+                mentions={post.mentions}
+                onChange={(next) => set("mentions", next)}
+              />
               <CheckboxField
                 label="Truncate with “…see more”"
                 checked={post.clamp}
@@ -354,6 +362,71 @@ function NumberField({ value, onChange }: { value: number; onChange: (v: number)
       value={String(value)}
       onValueChange={(v) => onChange(Math.max(0, Number(v) || 0))}
     />
+  );
+}
+
+function MentionsField({
+  mentions,
+  onChange,
+}: {
+  mentions: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const [draft, setDraft] = useState("");
+
+  function add() {
+    const name = draft.trim();
+    if (!name) return;
+    if (!mentions.some((m) => m.toLowerCase() === name.toLowerCase())) onChange([...mentions, name]);
+    setDraft("");
+  }
+
+  return (
+    <Field>
+      <FieldLabel>
+        <AtSign className="size-3.5 text-muted-foreground" />
+        Tagged people &amp; pages
+      </FieldLabel>
+      <div className="flex w-full gap-2">
+        <Input
+          value={draft}
+          placeholder="Micro Club usthb"
+          onValueChange={setDraft}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              add();
+            }
+          }}
+        />
+        <Button variant="outline" size="icon" aria-label="Add tag" onClick={add}>
+          <Plus />
+        </Button>
+      </div>
+      {mentions.length > 0 ? (
+        <ul className="flex flex-wrap gap-1.5">
+          {mentions.map((name) => (
+            <li key={name}>
+              <Badge variant="secondary" size="lg" className="gap-1 pe-0.5">
+                {name}
+                <Button
+                  variant="ghost"
+                  size="icon-xs"
+                  aria-label={`Remove ${name}`}
+                  onClick={() => onChange(mentions.filter((m) => m !== name))}
+                >
+                  <X />
+                </Button>
+              </Badge>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <FieldDescription>
+        Each name is highlighted wherever it appears in the post text, the way LinkedIn renders a
+        tag.
+      </FieldDescription>
+    </Field>
   );
 }
 

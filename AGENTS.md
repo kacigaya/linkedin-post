@@ -46,6 +46,12 @@ Bun 1.3.14, Node 24.
   narrow-width tweaks use container queries, not viewport breakpoints.
 - Export `pixelRatio` scales with the rendered card width so a phone export is
   still roughly desktop-sized. The exported layout is whatever is on screen.
+- Tagged names are plain substrings, matched case-insensitively and
+  longest-first in `segments()`. LinkedIn stores mentions as links, not syntax,
+  so there is no marker to parse out of the body.
+- The editor's highlight overlay must keep the same text metrics as the
+  textarea it sits under, so it never bolds a tag. Changing that reintroduces
+  caret drift.
 - `PostCard` renders `mode="static"` during export because html-to-image clones
   textareas without their value.
 - No web fonts: the card uses the system sans stack, which keeps the export
