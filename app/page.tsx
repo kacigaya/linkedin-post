@@ -16,7 +16,6 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
@@ -155,108 +154,98 @@ export default function Page() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
-        <form className="order-2 flex min-w-0 flex-col gap-4 lg:order-1" onSubmit={(e) => e.preventDefault()}>
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UserRound className="size-4 text-muted-foreground" />
-                Author
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
+        <form className="order-2 flex min-w-0 flex-col gap-10 lg:order-1" onSubmit={(e) => e.preventDefault()}>
+          <section className="flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
+              <UserRound className="size-4 text-muted-foreground" />
+              Author
+            </h2>
+            <Field>
+              <FieldLabel>Name</FieldLabel>
+              <Input value={post.name} onValueChange={(v) => set("name", v)} />
+            </Field>
+            <Field>
+              <FieldLabel>Headline</FieldLabel>
+              <Input value={post.headline} onValueChange={(v) => set("headline", v)} />
+            </Field>
+            <div className="grid grid-cols-2 gap-3">
               <Field>
-                <FieldLabel>Name</FieldLabel>
-                <Input value={post.name} onValueChange={(v) => set("name", v)} />
+                <FieldLabel>Posted</FieldLabel>
+                <Input value={post.timestamp} onValueChange={(v) => set("timestamp", v)} />
               </Field>
               <Field>
-                <FieldLabel>Headline</FieldLabel>
-                <Input value={post.headline} onValueChange={(v) => set("headline", v)} />
-              </Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field>
-                  <FieldLabel>Posted</FieldLabel>
-                  <Input value={post.timestamp} onValueChange={(v) => set("timestamp", v)} />
-                </Field>
-                <Field>
-                  <FieldLabel>Profile photo</FieldLabel>
-                  <FilePicker
-                    onPick={(f) => pick("avatar", f)}
-                    onClear={() => set("avatar", null)}
-                    has={!!post.avatar}
-                    label="profile photo"
-                  />
-                </Field>
-              </div>
-              <Field>
-                <FieldLabel>Photo shape</FieldLabel>
-                <Segmented
-                  value={post.avatarShape}
-                  options={[
-                    { value: "circle", label: "Round" },
-                    { value: "square", label: "Square" },
-                  ]}
-                  onChange={(v) => set("avatarShape", v)}
-                />
-              </Field>
-              <CheckboxField
-                label="Verified badge"
-                checked={post.verified}
-                onChange={(v) => set("verified", v)}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <PenLine className="size-4 text-muted-foreground" />
-                Post
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <Field>
-                <FieldLabel>
-                  Text
-                  <span className="font-normal text-muted-foreground tabular-nums">
-                    {post.body.length}/{LINKEDIN_MAX}
-                  </span>
-                </FieldLabel>
-                <Textarea
-                  className="min-h-40"
-                  value={post.body}
-                  maxLength={LINKEDIN_MAX}
-                  onChange={(e) => set("body", e.target.value)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Attached image</FieldLabel>
+                <FieldLabel>Profile photo</FieldLabel>
                 <FilePicker
-                  onPick={(f) => pick("image", f)}
-                  onClear={() => set("image", null)}
-                  has={!!post.image}
-                  label="attached image"
+                  onPick={(f) => pick("avatar", f)}
+                  onClear={() => set("avatar", null)}
+                  has={!!post.avatar}
+                  label="profile photo"
                 />
               </Field>
-              <MentionsField
-                mentions={post.mentions}
-                onChange={(next) => set("mentions", next)}
+            </div>
+            <Field>
+              <FieldLabel>Photo shape</FieldLabel>
+              <Segmented
+                value={post.avatarShape}
+                options={[
+                  { value: "circle", label: "Round" },
+                  { value: "square", label: "Square" },
+                ]}
+                onChange={(v) => set("avatarShape", v)}
               />
-              <CheckboxField
-                label={'Cut it off with "…see more"'}
-                checked={post.clamp}
-                onChange={(v) => set("clamp", v)}
-              />
-            </CardContent>
-          </Card>
+            </Field>
+            <CheckboxField
+              label="Verified badge"
+              checked={post.verified}
+              onChange={(v) => set("verified", v)}
+            />
+          </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ChartNoAxesColumn className="size-4 text-muted-foreground" />
-                Engagement
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-3">
+          <section className="flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
+              <PenLine className="size-4 text-muted-foreground" />
+              Post
+            </h2>
+            <Field>
+              <FieldLabel>
+                Text
+                <span className="font-normal text-muted-foreground tabular-nums">
+                  {post.body.length}/{LINKEDIN_MAX}
+                </span>
+              </FieldLabel>
+              <Textarea
+                className="min-h-40"
+                value={post.body}
+                maxLength={LINKEDIN_MAX}
+                onChange={(e) => set("body", e.target.value)}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Attached image</FieldLabel>
+              <FilePicker
+                onPick={(f) => pick("image", f)}
+                onClear={() => set("image", null)}
+                has={!!post.image}
+                label="attached image"
+              />
+            </Field>
+            <MentionsField
+              mentions={post.mentions}
+              onChange={(next) => set("mentions", next)}
+            />
+            <CheckboxField
+              label={'Cut it off with "…see more"'}
+              checked={post.clamp}
+              onChange={(v) => set("clamp", v)}
+            />
+          </section>
+
+          <section className="flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
+              <ChartNoAxesColumn className="size-4 text-muted-foreground" />
+              Engagement
+            </h2>
+            <div className="grid grid-cols-3 gap-3">
               <Field>
                 <FieldLabel>Reactions</FieldLabel>
                 <NumberField value={post.reactions} onChange={(v) => set("reactions", v)} />
@@ -269,61 +258,57 @@ export default function Page() {
                 <FieldLabel>Reposts</FieldLabel>
                 <NumberField value={post.reposts} onChange={(v) => set("reposts", v)} />
               </Field>
-            </CardContent>
-          </Card>
+            </div>
+          </section>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <ImageDown className="size-4 text-muted-foreground" />
-                Export
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <Field>
-                <FieldLabel>Card theme</FieldLabel>
-                <Segmented
-                  value={post.theme}
-                  options={[
-                    { value: "light", label: "Light" },
-                    { value: "dark", label: "Dark" },
-                  ]}
-                  onChange={(v) => set("theme", v)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Backdrop</FieldLabel>
-                <Segmented
-                  value={background}
-                  options={BACKGROUNDS.map((b) => ({ value: b.id, label: b.label }))}
-                  onChange={setBackground}
-                />
-              </Field>
-              <div className="flex flex-wrap gap-2">
-                <Button onClick={download}>
-                  <Download />
-                  Download PNG
-                </Button>
-                <Button variant="outline" onClick={copy}>
-                  <Copy />
-                  Copy image
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setPost(DEFAULT_POST);
-                    setStatus("Back to the defaults.");
-                  }}
-                >
-                  <RotateCcw />
-                  Reset
-                </Button>
-              </div>
-              <p aria-live="polite" className="min-h-5 text-muted-foreground text-xs">
-                {status}
-              </p>
-            </CardContent>
-          </Card>
+          <section className="flex flex-col gap-4">
+            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
+              <ImageDown className="size-4 text-muted-foreground" />
+              Export
+            </h2>
+            <Field>
+              <FieldLabel>Card theme</FieldLabel>
+              <Segmented
+                value={post.theme}
+                options={[
+                  { value: "light", label: "Light" },
+                  { value: "dark", label: "Dark" },
+                ]}
+                onChange={(v) => set("theme", v)}
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Backdrop</FieldLabel>
+              <Segmented
+                value={background}
+                options={BACKGROUNDS.map((b) => ({ value: b.id, label: b.label }))}
+                onChange={setBackground}
+              />
+            </Field>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={download}>
+                <Download />
+                Download PNG
+              </Button>
+              <Button variant="outline" onClick={copy}>
+                <Copy />
+                Copy image
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setPost(DEFAULT_POST);
+                  setStatus("Back to the defaults.");
+                }}
+              >
+                <RotateCcw />
+                Reset
+              </Button>
+            </div>
+            <p aria-live="polite" className="min-h-5 text-muted-foreground text-xs">
+              {status}
+            </p>
+          </section>
         </form>
 
         <div className="order-1 min-w-0 lg:order-2 lg:sticky lg:top-8 lg:self-start">
