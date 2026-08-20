@@ -88,7 +88,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
             <Highlighted text={post.body} mentions={post.mentions} />
           </p>
         )}
-        {post.clamp && mode === "static" ? (
+        {post.clamp ? (
           <button
             type="button"
             className="mt-0.5 text-[14px]"

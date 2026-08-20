@@ -156,8 +156,8 @@ export default function Page() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
         <form className="order-2 flex min-w-0 flex-col gap-10 lg:order-1" onSubmit={(e) => e.preventDefault()}>
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
-              <UserRound className="size-4 text-muted-foreground" />
+            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+              <UserRound className="size-4.5 text-muted-foreground" />
               Author
             </h2>
             <Field>
@@ -202,8 +202,8 @@ export default function Page() {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
-              <PenLine className="size-4 text-muted-foreground" />
+            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+              <PenLine className="size-4.5 text-muted-foreground" />
               Post
             </h2>
             <Field>
@@ -241,8 +241,8 @@ export default function Page() {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
-              <ChartNoAxesColumn className="size-4 text-muted-foreground" />
+            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+              <ChartNoAxesColumn className="size-4.5 text-muted-foreground" />
               Engagement
             </h2>
             <div className="grid grid-cols-3 gap-3">
@@ -262,8 +262,8 @@ export default function Page() {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-bold text-base tracking-tight">
-              <ImageDown className="size-4 text-muted-foreground" />
+            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+              <ImageDown className="size-4.5 text-muted-foreground" />
               Export
             </h2>
             <Field>
@@ -485,12 +485,12 @@ function FilePicker({
           e.target.value = "";
         }}
       />
-      <Button className="flex-1" variant="outline" size="sm" onClick={() => ref.current?.click()}>
+      <Button className="flex-1" variant="outline" onClick={() => ref.current?.click()}>
         <Upload />
         {has ? "Replace" : "Upload"}
       </Button>
       {has ? (
-        <Button variant="ghost" size="icon-sm" aria-label={`Remove ${label}`} onClick={onClear}>
+        <Button variant="ghost" size="icon" aria-label={`Remove ${label}`} onClick={onClear}>
           <X />
         </Button>
       ) : null}
