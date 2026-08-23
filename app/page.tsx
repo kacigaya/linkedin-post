@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toBlob } from "html-to-image";
 import {
   AtSign,
   ChartNoAxesColumn,
@@ -70,6 +69,8 @@ export default function Page() {
   const render = useCallback(async (): Promise<Blob | null> => {
     const node = frameRef.current;
     if (!node) return null;
+    // Export is an optional path. Keep its renderer out of the initial bundle.
+    const { toBlob } = await import("html-to-image");
     // Swap the textarea for static markup: a cloned textarea exports empty.
     setExporting(true);
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
