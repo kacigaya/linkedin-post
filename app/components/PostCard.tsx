@@ -16,6 +16,8 @@ export type Post = {
   /** People or pages tagged in the post; highlighted wherever they appear. */
   mentions: string[];
   image: string | null;
+  imageWidth?: number;
+  imageHeight?: number;
   verified: boolean;
   clamp: boolean;
   reactions: number;
@@ -76,8 +78,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       </header>
 
       <div className="px-4 pb-3 pt-2">
-        {mode === "edit" ? (
-          <BodyEditor
+        {mode === "edit" ? (\n          <BodyEditor
             value={post.body}
             mentions={post.mentions}
             onChange={onBodyChange}
@@ -102,8 +103,16 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
 
       {post.image ? (
         // Uploaded images are data URLs; next/image would proxy them for nothing.
+        // Explicit width/height prevents layout shift while the image loads.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.image} alt="Image attached to the post" loading="lazy" className="block w-full" />
+        <img
+          src={post.image}
+          alt="Image attached to the post"
+          width={post.imageWidth || 1200}
+          height={post.imageHeight || 630}
+          loading="lazy"
+          className="block h-auto w-full"
+        />
       ) : null}
 
       <div
@@ -116,16 +125,20 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
             <LoveReaction className="h-4 w-4" />
             <InsightReaction className="h-4 w-4" />
           </span>
-          <span>{formatCount(post.reactions)}</span>
+          <span className="tabular-nums">{formatCount(post.reactions)}</span>
         </span>
         <span className="flex gap-2">
-          <span>{formatCount(post.comments)} comments</span>
+          <span className="tabular-nums">
+            {formatCount(post.comments)}&nbsp;{post.comments === 1 ? "comment" : "comments"}
+          </span>
           <span aria-hidden="true">·</span>
-          <span>{formatCount(post.reposts)} reposts</span>
+          <span className="tabular-nums">
+            {formatCount(post.reposts)}&nbsp;{post.reposts === 1 ? "repost" : "reposts"}
+          </span>
         </span>
       </div>
 
-      <div className="flex items-center justify-between px-2 py-1">
+      <div aria-hidden="true" className="flex items-center justify-between px-2 py-1">
         <Action icon={<ThumbsUp aria-hidden="true" className="h-5 w-5" />} label="Like" />
         <Action icon={<MessageCircle aria-hidden="true" className="h-5 w-5" />} label="Comment" />
         <Action icon={<Repeat2 aria-hidden="true" className="h-5 w-5" />} label="Repost" />
@@ -151,8 +164,7 @@ function Avatar({ post }: { post: Post }) {
       />
     );
   }
-  return (
-    <div
+  return (\n    <div
       className={`flex h-12 w-12 shrink-0 items-center justify-center text-[16px] font-semibold text-white ${shape}`}
       style={{ background: "#0a66c2" }}
     >
@@ -250,7 +262,11 @@ function BodyEditor({
         className={`${className} pointer-events-none absolute inset-0 select-none`}
         style={{ color: "var(--li-text)" }}
       >
-        <Highlighted text={value} mentions={mentions} bold={false} />
+        {value ? (
+          <Highlighted text={value} mentions={mentions} bold={false} />
+        ) : (
+          <span style={{ color: "var(--li-muted)" }}>Write a post…</span>
+        )}
       </div>
       <textarea
         ref={ref}
@@ -259,7 +275,8 @@ function BodyEditor({
         onChange={(e) => onChange(e.target.value)}
         aria-label="Post text"
         spellCheck={false}
-        className={`${className} relative block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--li-link)] focus-visible:ring-offset-1`}
+        placeholder="Write a post…"
+        className={`${className} relative block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--li-link)] focus-visible:ring-offset-1 placeholder:text-transparent`}
         style={{ color: "transparent", caretColor: "var(--li-text)", fontFamily: "inherit" }}
       />
     </div>
