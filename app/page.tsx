@@ -53,6 +53,15 @@ const DEFAULT_POST: Post = {
   theme: "light",
 };
 
+function getImageDimensions(src: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve({ width: 1200, height: 630 });
+    img.src = src;
+  });
+}
+
 export default function Page() {
   const [post, setPost] = useState<Post>(DEFAULT_POST);
   const [background, setBackground] = useState<BackgroundId>("grey");
@@ -65,6 +74,50 @@ export default function Page() {
   }, []);
 
   const bg = BACKGROUNDS.find((b) => b.id === background)!;
+
+  // Warn before navigating away if the user made modifications.
+  const isDirty = JSON.stringify(post) !== JSON.stringify(DEFAULT_POST);
+  useEffect(() => {
+    if (!isDirty) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [isDirty]);
+
+  // Deep-link initial backdrop and card theme from URL search params.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const bgParam = params.get("bg");
+    if (bgParam && BACKGROUNDS.some((b) => b.id === bgParam)) {
+      setBackground(bgParam as BackgroundId);
+    }
+    const themeParam = params.get("theme");
+    if (themeParam === "light" || themeParam === "dark") {
+      setPost((prev) => ({ ...prev, theme: themeParam }));
+    }
+  }, []);
+
+  // Keep stateful UI in sync with URL search params.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (background !== "grey") {
+      url.searchParams.set("bg", background);
+    } else {
+      url.searchParams.delete("bg");
+    }
+    if (post.theme !== "light") {
+      url.searchParams.set("theme", post.theme);
+    } else {
+      url.searchParams.delete("theme");
+    }
+    const search = url.searchParams.toString();
+    const newRelativePath = search ? `${url.pathname}?${search}` : url.pathname;
+    if (window.location.search !== (search ? `?${search}` : "")) {
+      window.history.replaceState(null, "", newRelativePath);
+    }
+  }, [background, post.theme]);
 
   const render = useCallback(async (): Promise<Blob | null> => {
     const node = frameRef.current;
@@ -79,8 +132,7 @@ export default function Page() {
       await Promise.all(
         Array.from(node.querySelectorAll("img")).map((img) => img.decode().catch(() => undefined)),
       );
-      return await toBlob(node, {
-        // The card is fluid, so scale the capture to land near a desktop-width
+      return await toBlob(node, {\n        // The card is fluid, so scale the capture to land near a desktop-width
         // PNG instead of exporting a phone-sized image.
         pixelRatio: Math.min(4, Math.max(2, 1200 / node.offsetWidth)),
         cacheBust: true,
@@ -92,6 +144,7 @@ export default function Page() {
   }, [bg.value]);
 
   async function download() {
+    setStatus("Rendering PNG…");
     let blob: Blob | null;
     try {
       blob = await render();
@@ -110,6 +163,7 @@ export default function Page() {
   }
 
   async function copy() {
+    setStatus("Rendering PNG…");
     let blob: Blob | null;
     try {
       blob = await render();
@@ -135,20 +189,31 @@ export default function Page() {
     // Large photos become multi-megabyte data URLs that the export canvas
     // cannot allocate, so refuse them instead of freezing the tab.
     if (file.size > MAX_UPLOAD_BYTES) {
-      setStatus(`That image is over ${MAX_UPLOAD_BYTES / 1_000_000} MB. Pick a smaller one.`);
+      setStatus(`That image is over ${MAX_UPLOAD_BYTES / 1_000_000}\u00a0MB. Pick a smaller one.`);
       return;
     }
-    set(key, await readAsDataUrl(file));
+    const dataUrl = await readAsDataUrl(file);
+    if (key === "image") {
+      const dims = await getImageDimensions(dataUrl);
+      setPost((prev) => ({
+        ...prev,
+        image: dataUrl,
+        imageWidth: dims.width,
+        imageHeight: dims.height,
+      }));
+    } else {
+      set("avatar", dataUrl);
+    }
     setStatus(null);
   }
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8">
+    <main id="main" className="mx-auto w-full max-w-6xl scroll-mt-4 px-4 py-8 sm:px-8">
       <div className="mb-8">
         <h1 className="font-heading font-semibold text-2xl tracking-tight text-balance">
           Write the Post, Download the Picture
         </h1>
-        <p className="mt-1 max-w-prose text-muted-foreground text-sm">
+        <p className="mt-1 max-w-prose text-muted-foreground text-pretty text-sm">
           Nothing is uploaded and there is no account. The post text is a real textarea, so
           Backspace, Enter and paste work the way they do everywhere else.
         </p>
@@ -157,25 +222,44 @@ export default function Page() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)]">
         <form className="order-2 flex min-w-0 flex-col gap-10 lg:order-1" onSubmit={(e) => e.preventDefault()}>
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+            <h2 id="author" className="flex scroll-mt-6 items-center gap-2 font-extrabold text-lg tracking-tight text-balance">
               <UserRound aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Author
             </h2>
             <Field>
               <FieldLabel>Name</FieldLabel>
-              <Input name="author-name" autoComplete="off" value={post.name} onValueChange={(v) => set("name", v)} />
+              <Input
+                name="author-name"
+                autoComplete="off"
+                placeholder="Example: Gaya Kaci…"
+                value={post.name}
+                onValueChange={(v) => set("name", v)}
+              />
             </Field>
             <Field>
               <FieldLabel>Headline</FieldLabel>
-              <Input name="author-headline" autoComplete="off" value={post.headline} onValueChange={(v) => set("headline", v)} />
+              <Input
+                name="author-headline"
+                autoComplete="off"
+                placeholder="Example: Cybersecurity engineer · building small, sharp tools…"
+                value={post.headline}
+                onValueChange={(v) => set("headline", v)}
+              />
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field>
                 <FieldLabel>Posted</FieldLabel>
-                <Input name="posted" autoComplete="off" placeholder="2h…" value={post.timestamp} onValueChange={(v) => set("timestamp", v)} />
+                <Input
+                  name="posted"
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder="Example: 2h…"
+                  value={post.timestamp}
+                  onValueChange={(v) => set("timestamp", v)}
+                />
               </Field>
               <Field>
-                <FieldLabel>Profile photo</FieldLabel>
+                <FieldLabel>Profile Photo</FieldLabel>
                 <FilePicker
                   onPick={(f) => pick("avatar", f)}
                   onClear={() => set("avatar", null)}
@@ -185,9 +269,10 @@ export default function Page() {
               </Field>
             </div>
             <Field>
-              <FieldLabel>Photo shape</FieldLabel>
+              <FieldLabel>Photo Shape</FieldLabel>
               <Segmented
                 value={post.avatarShape}
+                ariaLabel="Photo shape"
                 options={[
                   { value: "circle", label: "Round" },
                   { value: "square", label: "Square" },
@@ -196,14 +281,14 @@ export default function Page() {
               />
             </Field>
             <CheckboxField
-              label="Verified badge"
+              label="Verified Badge"
               checked={post.verified}
               onChange={(v) => set("verified", v)}
             />
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+            <h2 id="post" className="flex scroll-mt-6 items-center gap-2 font-extrabold text-lg tracking-tight text-balance">
               <PenLine aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Post
             </h2>
@@ -218,16 +303,24 @@ export default function Page() {
                 className="min-h-40"
                 name="post-body"
                 autoComplete="off"
+                placeholder="Example: I rebuilt the post preview this weekend…"
                 value={post.body}
                 maxLength={LINKEDIN_MAX}
                 onChange={(e) => set("body", e.target.value)}
               />
             </Field>
             <Field>
-              <FieldLabel>Attached image</FieldLabel>
+              <FieldLabel>Attached Image</FieldLabel>
               <FilePicker
                 onPick={(f) => pick("image", f)}
-                onClear={() => set("image", null)}
+                onClear={() =>
+                  setPost((prev) => ({
+                    ...prev,
+                    image: null,
+                    imageWidth: undefined,
+                    imageHeight: undefined,
+                  }))
+                }
                 has={!!post.image}
                 label="attached image"
               />
@@ -235,16 +328,17 @@ export default function Page() {
             <MentionsField
               mentions={post.mentions}
               onChange={(next) => set("mentions", next)}
+              onDuplicate={(name) => setStatus(`“${name}” is already tagged.`)}
             />
             <CheckboxField
-              label={'Cut it off with “…see more”'}
+              label={'Truncate with \u201c\u2026see more\u201d'}
               checked={post.clamp}
               onChange={(v) => set("clamp", v)}
             />
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+            <h2 id="engagement" className="flex scroll-mt-6 items-center gap-2 font-extrabold text-lg tracking-tight text-balance">
               <ChartNoAxesColumn aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Engagement
             </h2>
@@ -265,14 +359,15 @@ export default function Page() {
           </section>
 
           <section className="flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+            <h2 id="export" className="flex scroll-mt-6 items-center gap-2 font-extrabold text-lg tracking-tight text-balance">
               <ImageDown aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Export
             </h2>
             <Field>
-              <FieldLabel>Card theme</FieldLabel>
+              <FieldLabel>Card Theme</FieldLabel>
               <Segmented
                 value={post.theme}
+                ariaLabel="Card theme"
                 options={[
                   { value: "light", label: "Light" },
                   { value: "dark", label: "Dark" },
@@ -284,6 +379,7 @@ export default function Page() {
               <FieldLabel>Backdrop</FieldLabel>
               <Segmented
                 value={background}
+                ariaLabel="Backdrop"
                 options={BACKGROUNDS.map((b) => ({ value: b.id, label: b.label }))}
                 onChange={setBackground}
               />
@@ -330,7 +426,7 @@ export default function Page() {
               onBodyChange={(v) => set("body", v)}
             />
           </div>
-          <p className="mt-3 text-muted-foreground text-xs">
+          <p className="mt-3 text-muted-foreground text-pretty text-xs">
             Click the post text to edit it here.
           </p>
         </div>
@@ -339,12 +435,23 @@ export default function Page() {
   );
 }
 
-function NumberField({ value, onChange, name }: { value: number; onChange: (v: number) => void; name: string }) {
+function NumberField({
+  value,
+  onChange,
+  name,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  name: string;
+}) {
   return (
     <Input
       type="number"
       name={name}
       autoComplete="off"
+      spellCheck={false}
+      placeholder="0…"
+      className="tabular-nums"
       min={0}
       inputMode="numeric"
       value={String(value)}
@@ -356,16 +463,22 @@ function NumberField({ value, onChange, name }: { value: number; onChange: (v: n
 function MentionsField({
   mentions,
   onChange,
+  onDuplicate,
 }: {
   mentions: string[];
   onChange: (next: string[]) => void;
+  onDuplicate: (name: string) => void;
 }) {
   const [draft, setDraft] = useState("");
 
   function add() {
     const name = draft.trim();
     if (!name) return;
-    if (!mentions.some((m) => m.toLowerCase() === name.toLowerCase())) onChange([...mentions, name]);
+    if (mentions.some((m) => m.toLowerCase() === name.toLowerCase())) {
+      onDuplicate(name);
+      return;
+    }
+    onChange([...mentions, name]);
     setDraft("");
   }
 
@@ -373,7 +486,7 @@ function MentionsField({
     <Field>
       <FieldLabel>
         <AtSign aria-hidden="true" className="size-3.5 text-muted-foreground" />
-        Tagged people &amp; pages
+        Tagged People &amp; Pages
       </FieldLabel>
       <div className="flex w-full gap-2">
         <Input
@@ -396,8 +509,7 @@ function MentionsField({
       </div>
       {mentions.length > 0 ? (
         <ul className="flex flex-wrap gap-1.5">
-          {mentions.map((name) => (
-            <li key={name} className="min-w-0 max-w-full">
+          {mentions.map((name) => (\n            <li key={name} className="min-w-0 max-w-full">
               <Badge variant="secondary" size="lg" className="max-w-full gap-1 pe-0.5">
                 <span className="min-w-0 truncate">{name}</span>
                 <Button
@@ -431,8 +543,8 @@ function CheckboxField({
 }) {
   return (
     <Field>
-      <FieldLabel className="gap-2.5">
-        <Checkbox checked={checked} onCheckedChange={onChange} />
+      <FieldLabel className="cursor-pointer gap-2.5 select-none">
+        <Checkbox checked={checked} onCheckedChange={onChange} aria-label={label} />
         {label}
       </FieldLabel>
     </Field>
@@ -442,16 +554,19 @@ function CheckboxField({
 function Segmented<T extends string>({
   value,
   options,
+  ariaLabel,
   onChange,
 }: {
   value: T;
   options: ReadonlyArray<{ value: T; label: string }>;
+  ariaLabel?: string;
   onChange: (v: T) => void;
 }) {
   return (
     <ToggleGroup
       className="w-full"
       variant="outline"
+      aria-label={ariaLabel}
       value={[value]}
       onValueChange={(next) => {
         // Base UI hands back an array; ignore the empty one so a segment is
