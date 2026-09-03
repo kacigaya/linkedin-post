@@ -289,17 +289,18 @@ export default function Page() {
               />
             </Field>
             <div className="flex flex-wrap gap-2">
-              <Button onClick={download}>
+              <Button onClick={download} loading={exporting}>
                 <Download aria-hidden="true" />
                 Download PNG
               </Button>
-              <Button variant="outline" onClick={copy}>
+              <Button variant="outline" onClick={copy} loading={exporting}>
                 <Copy aria-hidden="true" />
                 Copy Image
               </Button>
               <Button
                 variant="ghost"
                 onClick={() => {
+                  if (!window.confirm("Reset everything back to the defaults?")) return;
                   setPost(DEFAULT_POST);
                   setStatus("Back to the defaults.");
                 }}
