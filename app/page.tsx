@@ -163,16 +163,16 @@ export default function Page() {
             </h2>
             <Field>
               <FieldLabel>Name</FieldLabel>
-              <Input value={post.name} onValueChange={(v) => set("name", v)} />
+              <Input name="author-name" autoComplete="off" value={post.name} onValueChange={(v) => set("name", v)} />
             </Field>
             <Field>
               <FieldLabel>Headline</FieldLabel>
-              <Input value={post.headline} onValueChange={(v) => set("headline", v)} />
+              <Input name="author-headline" autoComplete="off" value={post.headline} onValueChange={(v) => set("headline", v)} />
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field>
                 <FieldLabel>Posted</FieldLabel>
-                <Input value={post.timestamp} onValueChange={(v) => set("timestamp", v)} />
+                <Input name="posted" autoComplete="off" placeholder="2h…" value={post.timestamp} onValueChange={(v) => set("timestamp", v)} />
               </Field>
               <Field>
                 <FieldLabel>Profile photo</FieldLabel>
@@ -216,6 +216,8 @@ export default function Page() {
               </FieldLabel>
               <Textarea
                 className="min-h-40"
+                name="post-body"
+                autoComplete="off"
                 value={post.body}
                 maxLength={LINKEDIN_MAX}
                 onChange={(e) => set("body", e.target.value)}
@@ -249,15 +251,15 @@ export default function Page() {
             <div className="grid grid-cols-3 gap-3">
               <Field>
                 <FieldLabel>Reactions</FieldLabel>
-                <NumberField value={post.reactions} onChange={(v) => set("reactions", v)} />
+                <NumberField name="reactions" value={post.reactions} onChange={(v) => set("reactions", v)} />
               </Field>
               <Field>
                 <FieldLabel>Comments</FieldLabel>
-                <NumberField value={post.comments} onChange={(v) => set("comments", v)} />
+                <NumberField name="comments" value={post.comments} onChange={(v) => set("comments", v)} />
               </Field>
               <Field>
                 <FieldLabel>Reposts</FieldLabel>
-                <NumberField value={post.reposts} onChange={(v) => set("reposts", v)} />
+                <NumberField name="reposts" value={post.reposts} onChange={(v) => set("reposts", v)} />
               </Field>
             </div>
           </section>
@@ -336,10 +338,12 @@ export default function Page() {
   );
 }
 
-function NumberField({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+function NumberField({ value, onChange, name }: { value: number; onChange: (v: number) => void; name: string }) {
   return (
     <Input
       type="number"
+      name={name}
+      autoComplete="off"
       min={0}
       inputMode="numeric"
       value={String(value)}
@@ -373,7 +377,10 @@ function MentionsField({
       <div className="flex w-full gap-2">
         <Input
           value={draft}
-          placeholder="Micro Club usthb"
+          name="mention-draft"
+          autoComplete="off"
+          spellCheck={false}
+          placeholder="Example: Micro Club usthb…"
           onValueChange={setDraft}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
