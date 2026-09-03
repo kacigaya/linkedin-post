@@ -21,13 +21,16 @@ export function SiteNav() {
         aria-label="Primary"
         className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between gap-2 rounded-xl border bg-card/80 pr-1.5 pl-3 shadow-sm backdrop-blur sm:pr-2 sm:pl-4"
       >
-        <span className="flex min-w-0 items-center gap-2.5 font-semibold text-sm">
+        <a
+          href="/"
+          className="flex min-w-0 items-center gap-2.5 rounded-md font-semibold text-sm outline-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icon.svg" alt="" width={20} height={20} className="size-5 shrink-0 rounded-[5px]" />
           <span className="truncate">
-            <span translate="no">LinkedIn</span> post generator
+            <span translate="no">LinkedIn</span> Post Generator
           </span>
-        </span>
+        </a>
         <Button
           variant="ghost"
           size="icon"
@@ -35,8 +38,8 @@ export function SiteNav() {
           aria-label={mounted ? `Switch to ${dark ? "light" : "dark"} theme` : "Switch theme"}
         >
           {/* Swapped in CSS, so the server and the client render the same markup. */}
-          <Sun className="dark:hidden" />
-          <Moon className="hidden dark:block" />
+          <Sun aria-hidden="true" className="dark:hidden" />
+          <Moon aria-hidden="true" className="hidden dark:block" />
         </Button>
       </nav>
     </header>
