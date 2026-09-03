@@ -65,7 +65,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
           >
             <span>{post.timestamp}</span>
             <span aria-hidden="true">·</span>
-            <Globe className="h-3 w-3" strokeWidth={2.25} />
+            <Globe aria-hidden="true" className="h-3 w-3" strokeWidth={2.25} />
           </p>
         </div>
         <span className="mt-1 shrink-0" style={{ color: "var(--li-muted)" }} aria-hidden="true">
@@ -126,10 +126,10 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       </div>
 
       <div className="flex items-center justify-between px-2 py-1">
-        <Action icon={<ThumbsUp className="h-5 w-5" />} label="Like" />
-        <Action icon={<MessageCircle className="h-5 w-5" />} label="Comment" />
-        <Action icon={<Repeat2 className="h-5 w-5" />} label="Repost" />
-        <Action icon={<Send className="h-5 w-5" />} label="Send" />
+        <Action icon={<ThumbsUp aria-hidden="true" className="h-5 w-5" />} label="Like" />
+        <Action icon={<MessageCircle aria-hidden="true" className="h-5 w-5" />} label="Comment" />
+        <Action icon={<Repeat2 aria-hidden="true" className="h-5 w-5" />} label="Repost" />
+        <Action icon={<Send aria-hidden="true" className="h-5 w-5" />} label="Send" />
       </div>
     </article>
   );

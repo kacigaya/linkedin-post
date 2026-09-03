@@ -158,7 +158,7 @@ export default function Page() {
         <form className="order-2 flex min-w-0 flex-col gap-10 lg:order-1" onSubmit={(e) => e.preventDefault()}>
           <section className="flex flex-col gap-4">
             <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-              <UserRound className="size-4.5 text-muted-foreground" />
+              <UserRound aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Author
             </h2>
             <Field>
@@ -204,7 +204,7 @@ export default function Page() {
 
           <section className="flex flex-col gap-4">
             <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-              <PenLine className="size-4.5 text-muted-foreground" />
+              <PenLine aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Post
             </h2>
             <Field>
@@ -243,7 +243,7 @@ export default function Page() {
 
           <section className="flex flex-col gap-4">
             <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-              <ChartNoAxesColumn className="size-4.5 text-muted-foreground" />
+              <ChartNoAxesColumn aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Engagement
             </h2>
             <div className="grid grid-cols-3 gap-3">
@@ -264,7 +264,7 @@ export default function Page() {
 
           <section className="flex flex-col gap-4">
             <h2 className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
-              <ImageDown className="size-4.5 text-muted-foreground" />
+              <ImageDown aria-hidden="true" className="size-4.5 text-muted-foreground" />
               Export
             </h2>
             <Field>
@@ -288,11 +288,11 @@ export default function Page() {
             </Field>
             <div className="flex flex-wrap gap-2">
               <Button onClick={download}>
-                <Download />
+                <Download aria-hidden="true" />
                 Download PNG
               </Button>
               <Button variant="outline" onClick={copy}>
-                <Copy />
+                <Copy aria-hidden="true" />
                 Copy image
               </Button>
               <Button
@@ -302,7 +302,7 @@ export default function Page() {
                   setStatus("Back to the defaults.");
                 }}
               >
-                <RotateCcw />
+                <RotateCcw aria-hidden="true" />
                 Reset
               </Button>
             </div>
@@ -367,7 +367,7 @@ function MentionsField({
   return (
     <Field>
       <FieldLabel>
-        <AtSign className="size-3.5 text-muted-foreground" />
+        <AtSign aria-hidden="true" className="size-3.5 text-muted-foreground" />
         Tagged people &amp; pages
       </FieldLabel>
       <div className="flex w-full gap-2">
@@ -383,7 +383,7 @@ function MentionsField({
           }}
         />
         <Button variant="outline" size="icon" aria-label="Add tagged name" onClick={add}>
-          <Plus />
+          <Plus aria-hidden="true" />
         </Button>
       </div>
       {mentions.length > 0 ? (
@@ -398,7 +398,7 @@ function MentionsField({
                   aria-label={`Remove ${name}`}
                   onClick={() => onChange(mentions.filter((m) => m !== name))}
                 >
-                  <X />
+                  <X aria-hidden="true" />
                 </Button>
               </Badge>
             </li>
@@ -479,6 +479,7 @@ function FilePicker({
         ref={ref}
         type="file"
         accept="image/*"
+        aria-label={`Upload ${label}`}
         className="hidden"
         onChange={(e) => {
           onPick(e.target.files?.[0]);
@@ -487,12 +488,12 @@ function FilePicker({
         }}
       />
       <Button className="flex-1" variant="outline" onClick={() => ref.current?.click()}>
-        <Upload />
+        <Upload aria-hidden="true" />
         {has ? "Replace" : "Upload"}
       </Button>
       {has ? (
         <Button variant="ghost" size="icon" aria-label={`Remove ${label}`} onClick={onClear}>
-          <X />
+          <X aria-hidden="true" />
         </Button>
       ) : null}
     </div>
