@@ -129,13 +129,13 @@ export default function Page() {
   async function pick(key: "avatar" | "image", file: File | undefined) {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setStatus("That file is not an image.");
+      setStatus("That file is not an image. Pick a PNG or JPEG file instead.");
       return;
     }
     // Large photos become multi-megabyte data URLs that the export canvas
     // cannot allocate, so refuse them instead of freezing the tab.
     if (file.size > MAX_UPLOAD_BYTES) {
-      setStatus(`That image is over ${MAX_UPLOAD_BYTES / 1_000_000} MB. Pick a smaller one.`);
+      setStatus(`That image is over ${MAX_UPLOAD_BYTES / 1_000_000} MB. Pick a smaller one.`);
       return;
     }
     set(key, await readAsDataUrl(file));
@@ -145,8 +145,8 @@ export default function Page() {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8">
       <div className="mb-8">
-        <h1 className="font-heading font-semibold text-2xl tracking-tight">
-          Write the post, download the picture
+        <h1 className="font-heading font-semibold text-2xl tracking-tight text-balance">
+          Write the Post, Download the Picture
         </h1>
         <p className="mt-1 max-w-prose text-muted-foreground text-sm">
           Nothing is uploaded and there is no account. The post text is a real textarea, so
@@ -237,7 +237,7 @@ export default function Page() {
               onChange={(next) => set("mentions", next)}
             />
             <CheckboxField
-              label={'Cut it off with "…see more"'}
+              label={'Cut it off with “…see more”'}
               checked={post.clamp}
               onChange={(v) => set("clamp", v)}
             />
@@ -295,7 +295,7 @@ export default function Page() {
               </Button>
               <Button variant="outline" onClick={copy}>
                 <Copy aria-hidden="true" />
-                Copy image
+                Copy Image
               </Button>
               <Button
                 variant="ghost"
