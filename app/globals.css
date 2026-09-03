@@ -111,7 +111,7 @@
   }
 
   body {
-    @apply bg-background font-sans text-foreground antialiased;
+    @apply bg-background font-sans text-foreground antialiased touch-manipulation;
   }
 
   button,

@@ -24,7 +24,9 @@ export function SiteNav() {
         <span className="flex min-w-0 items-center gap-2.5 font-semibold text-sm">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icon.svg" alt="" width={20} height={20} className="size-5 shrink-0 rounded-[5px]" />
-          <span className="truncate">LinkedIn post generator</span>
+          <span className="truncate">
+            <span translate="no">LinkedIn</span> post generator
+          </span>
         </span>
         <Button
           variant="ghost"

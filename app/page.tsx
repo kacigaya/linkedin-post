@@ -397,9 +397,9 @@ function MentionsField({
       {mentions.length > 0 ? (
         <ul className="flex flex-wrap gap-1.5">
           {mentions.map((name) => (
-            <li key={name}>
-              <Badge variant="secondary" size="lg" className="gap-1 pe-0.5">
-                {name}
+            <li key={name} className="min-w-0 max-w-full">
+              <Badge variant="secondary" size="lg" className="max-w-full gap-1 pe-0.5">
+                <span className="min-w-0 truncate">{name}</span>
                 <Button
                   variant="ghost"
                   size="icon-xs"
@@ -414,7 +414,7 @@ function MentionsField({
         </ul>
       ) : null}
       <FieldDescription>
-        Each name is highlighted wherever it appears in the post, the way LinkedIn draws a tag.
+        Each name is highlighted wherever it appears in the post, the way <span translate="no">LinkedIn</span> draws a tag.
       </FieldDescription>
     </Field>
   );

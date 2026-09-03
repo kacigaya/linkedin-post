@@ -56,14 +56,16 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
             </span>
             {post.verified ? <VerifiedIcon className="h-[14px] w-[14px] shrink-0" /> : null}
           </div>
-          <p className="truncate text-[12px] leading-[16px]" style={{ color: "var(--li-muted)" }}>
-            {post.headline}
-          </p>
+          {post.headline ? (
+            <p className="truncate text-[12px] leading-[16px]" style={{ color: "var(--li-muted)" }}>
+              {post.headline}
+            </p>
+          ) : null}
           <p
             className="flex items-center gap-1 text-[12px] leading-[16px]"
             style={{ color: "var(--li-muted)" }}
           >
-            <span>{post.timestamp}</span>
+            <span>{post.timestamp || "Just now"}</span>
             <span aria-hidden="true">·</span>
             <Globe aria-hidden="true" className="h-3 w-3" strokeWidth={2.25} />
           </p>
