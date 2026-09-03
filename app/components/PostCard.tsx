@@ -101,7 +101,7 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       {post.image ? (
         // Uploaded images are data URLs; next/image would proxy them for nothing.
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={post.image} alt="" className="block w-full" />
+        <img src={post.image} alt="Image attached to the post" loading="lazy" className="block w-full" />
       ) : null}
 
       <div
@@ -143,6 +143,8 @@ function Avatar({ post }: { post: Post }) {
       <img
         src={post.avatar}
         alt=""
+        width={48}
+        height={48}
         className={`h-12 w-12 shrink-0 object-cover ${shape}`}
       />
     );
