@@ -1,11 +1,11 @@
-/** LinkedIn shows raw counts up to 999 and then a compact form (1,234 -> 1K). */
+/** LinkedIn shows raw counts up to 999 and then a compact form (1,234 -> 1.2K). */
+const compact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
+
 export function formatCount(value: number): string {
   if (!Number.isFinite(value) || value <= 0) return "0";
   const n = Math.floor(value);
   if (n < 1000) return String(n);
-  if (n < 10_000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K`;
-  if (n < 1_000_000) return `${Math.floor(n / 1000)}K`;
-  return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+  return compact.format(n);
 }
 
 export function initials(name: string): string {

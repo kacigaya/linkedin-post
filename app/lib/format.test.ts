@@ -7,7 +7,7 @@ test("formatCount switches to a compact form past 999", () => {
   expect(formatCount(999)).toBe("999");
   expect(formatCount(1000)).toBe("1K");
   expect(formatCount(1500)).toBe("1.5K");
-  expect(formatCount(12_400)).toBe("12K");
+  expect(formatCount(12_400)).toBe("12.4K");
   expect(formatCount(2_300_000)).toBe("2.3M");
 });
 
