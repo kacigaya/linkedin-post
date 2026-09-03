@@ -78,7 +78,8 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
       </header>
 
       <div className="px-4 pb-3 pt-2">
-        {mode === "edit" ? (\n          <BodyEditor
+        {mode === "edit" ? (
+          <BodyEditor
             value={post.body}
             mentions={post.mentions}
             onChange={onBodyChange}
@@ -164,7 +165,8 @@ function Avatar({ post }: { post: Post }) {
       />
     );
   }
-  return (\n    <div
+  return (
+    <div
       className={`flex h-12 w-12 shrink-0 items-center justify-center text-[16px] font-semibold text-white ${shape}`}
       style={{ background: "#0a66c2" }}
     >

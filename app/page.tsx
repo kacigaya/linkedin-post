@@ -132,7 +132,8 @@ export default function Page() {
       await Promise.all(
         Array.from(node.querySelectorAll("img")).map((img) => img.decode().catch(() => undefined)),
       );
-      return await toBlob(node, {\n        // The card is fluid, so scale the capture to land near a desktop-width
+      return await toBlob(node, {
+        // The card is fluid, so scale the capture to land near a desktop-width
         // PNG instead of exporting a phone-sized image.
         pixelRatio: Math.min(4, Math.max(2, 1200 / node.offsetWidth)),
         cacheBust: true,
@@ -509,7 +510,8 @@ function MentionsField({
       </div>
       {mentions.length > 0 ? (
         <ul className="flex flex-wrap gap-1.5">
-          {mentions.map((name) => (\n            <li key={name} className="min-w-0 max-w-full">
+          {mentions.map((name) => (
+            <li key={name} className="min-w-0 max-w-full">
               <Badge variant="secondary" size="lg" className="max-w-full gap-1 pe-0.5">
                 <span className="min-w-0 truncate">{name}</span>
                 <Button
