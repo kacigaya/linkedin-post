@@ -89,14 +89,12 @@ export function PostCard({ post, mode, maxLength, onBodyChange }: Props) {
           </p>
         )}
         {post.clamp ? (
-          <button
-            type="button"
-            className="mt-0.5 text-[14px]"
-            style={{ color: "var(--li-muted)" }}
-            tabIndex={-1}
-          >
+          // Decorative mock of LinkedIn's affordance: the clamped state is
+          // already fully editable from the panel, so this stays out of the
+          // tab order and assistive tech instead of posing as a dead button.
+          <span aria-hidden="true" className="mt-0.5 block text-[14px]" style={{ color: "var(--li-muted)" }}>
             …see more
-          </button>
+          </span>
         ) : null}
       </div>
 
@@ -257,7 +255,7 @@ function BodyEditor({
         onChange={(e) => onChange(e.target.value)}
         aria-label="Post text"
         spellCheck={false}
-        className={`${className} relative block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none`}
+        className={`${className} relative block w-full resize-none overflow-hidden rounded-sm bg-transparent p-0 outline-none focus-visible:ring-2 focus-visible:ring-[var(--li-link)] focus-visible:ring-offset-1`}
         style={{ color: "transparent", caretColor: "var(--li-text)", fontFamily: "inherit" }}
       />
     </div>
