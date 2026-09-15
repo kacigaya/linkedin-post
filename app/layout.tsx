@@ -1,11 +1,20 @@
+import { SiteFooter } from "@/components/site-footer";
 import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "LinkedIn Post Generator",
@@ -14,7 +23,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
   openGraph: {
     title: "LinkedIn Post Generator",
-    description: "Build a LinkedIn post mockup and export it as a PNG. No upload, no account.",
+    description:
+      "Build a LinkedIn post mockup and export it as a PNG. No upload, no account.",
     type: "website",
   },
 };
@@ -27,11 +37,18 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${geistMono.variable}`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <a
             href="#main"
             className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:m-2 focus:rounded-lg focus:border focus:bg-card focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -40,6 +57,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           </a>
           <SiteNav />
           {children}
+          <SiteFooter />
         </ThemeProvider>
       </body>
     </html>

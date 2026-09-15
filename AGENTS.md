@@ -77,3 +77,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Privacy pages
+
+- Active Caddy config verified on 2026-09-15: `/var/log/caddy/linkedin-access.log`, default file rotation, no IP masking.
+- Privacy and cookie pages live in `app/(legal)`. Update both pages and `updated.ts` when data handling changes.
+- Footer policy links open in a new tab to preserve unsaved editor state.
+
+- VPS provider verified from cloud-init metadata on 2026-09-15: Oracle, availability zone `eu-paris-1-ad-1`.
