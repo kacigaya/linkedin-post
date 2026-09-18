@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LEGAL_UPDATED } from "../updated";
+import { LEGAL_UPDATED, LEGAL_UPDATED_LABEL } from "../updated";
 import { SITE_URL } from "@/app/site";
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default function PolicyPage() {
     <>
       <h1>Cookies policy</h1>
       <p className="text-xs text-muted-foreground tabular-nums">
-        Last updated <time dateTime={LEGAL_UPDATED}>15 September 2026</time>
+        Last updated <time dateTime={LEGAL_UPDATED}>{LEGAL_UPDATED_LABEL}</time>
       </p>
       <h2>Cookies</h2>
       <p>
