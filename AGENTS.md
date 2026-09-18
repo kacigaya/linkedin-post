@@ -12,22 +12,26 @@ changing tokens or chrome.
 
 ```sh
 bun install
-bun run dev        # next dev on :3000
-bun run build      # standalone output in .next/standalone
+bun run dev        # next dev on :3000, served under /linkedin-post/
+bun run build      # static export in out/
 bun run typecheck
-bun run check      # typecheck + build; run this before shipping
+bun run check      # typecheck + test + build; run this before shipping
 ```
 
 Bun 1.3.14, Node 24.
 
 ## Deployment
 
-- Public host: `linkedin.gayakaci.duckdns.org` (DuckDNS wildcard, no DNS work needed).
-- Dokploy Application, source type `git` on `kacigaya/linkedin-post`, build type
-  `dockerfile`, container port 3000.
-- Dokploy domain entry must stay `certificateType: none` and `https: false`;
-  Caddy owns TLS. See `/home/ubuntu/DOKPLOY.md` on the host.
-- Pushes to `main` trigger a Dokploy rebuild through the hooks endpoint.
+- Public URL: `https://kacigaya.github.io/linkedin-post/`. `app/site.ts`
+  holds it as `SITE_URL` for sitemap and canonical/OG URLs.
+- GitHub Pages, deployed by `.github/workflows/pages.yml` on push to `main`:
+  `bun run check`, upload `out/`, `actions/deploy-pages`. Pages source in the
+  repo settings must be "GitHub Actions", not a branch.
+- No server, no Docker, no Dokploy. The old `linkedin.gayakaci.duckdns.org`
+  host is retired.
+- Pages sets no response headers. The CSP is a `<meta http-equiv>` in
+  `app/layout.tsx`; `frame-ancestors`, `X-Content-Type-Options`, and
+  `Permissions-Policy` cannot be expressed that way and are gone.
 
 ## UI
 
@@ -37,7 +41,7 @@ Bun 1.3.14, Node 24.
 - Semantic tokens live at the top of `app/globals.css`: coss's neutral set
   shifted to the stone scale in light and to `#161616` / `#1b1b1b` in dark,
   copied from Muzik. `--brand` tracks `--primary`.
-- Fonts are Inter and Geist Mono through `next/font/google`, so the Docker build
+- Fonts are Inter and Geist Mono through `next/font/google`, so the build
   needs network access. The post card overrides them with the system stack.
 - Theming is `next-themes` (`attribute="class"`, system default). Anything
   derived from `resolvedTheme` must wait for a mounted flag, and the theme icons
@@ -48,8 +52,13 @@ Bun 1.3.14, Node 24.
 
 ## Constraints worth keeping
 
-- `next.config.ts` sets `output: "standalone"`; the Dockerfile runner copies
-  `.next/standalone` and `.next/static`. Removing it breaks the image.
+- `next.config.ts` sets `output: "export"`, `basePath: "/linkedin-post"`, and
+  `trailingSlash: true`. No API routes, server actions, `next/image`,
+  `headers()`, or middleware: the export build rejects them. `sitemap.ts` needs
+  `dynamic = "force-static"`.
+- `basePath` is applied by `next/link` and static asset imports, not by raw
+  `<a href="/x">` or `<img src="/x">`. Use `Link` and `import icon from
+  "@/public/icon.svg"` for anything that points inside the site.
 - The post body is a `<textarea>` on purpose. Do not replace it with
   `contenteditable` — free editing is the feature.
 - The post card is fluid (`w-full max-w-[552px]`). Giving it a fixed width sets
@@ -80,8 +89,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Privacy pages
 
-- Active Caddy config verified on 2026-09-15: `/var/log/caddy/linkedin-access.log`, default file rotation, no IP masking.
+- Hosting is GitHub Pages as of 2026-09-18; the operator holds no request
+  logs. The privacy page points at GitHub's General Privacy Statement for them.
 - Privacy and cookie pages live in `app/(legal)`. Update both pages and `updated.ts` when data handling changes.
 - Footer policy links open in a new tab to preserve unsaved editor state.
-
-- VPS provider verified from cloud-init metadata on 2026-09-15: Oracle, availability zone `eu-paris-1-ad-1`.

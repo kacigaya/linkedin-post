@@ -248,10 +248,20 @@ function BodyEditor({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    el.style.height = "auto";
-    // Three lines of 20px matches the line-clamp the export applies, so the
-    // editor never shows more text than the PNG will.
-    el.style.height = clamp ? `${Math.min(el.scrollHeight, 60)}px` : `${el.scrollHeight}px`;
+    const resize = () => {
+      el.style.height = "auto";
+      // Match the export's three-line clamp while preserving native editing.
+      el.style.height = clamp ? `${Math.min(el.scrollHeight, 60)}px` : `${el.scrollHeight}px`;
+    };
+    resize();
+    let width = el.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth === width) return;
+      width = el.clientWidth;
+      resize();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [value, clamp]);
 
   // The textarea keeps every native editing behaviour but paints its text

@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LEGAL_UPDATED } from "../updated";
+import { SITE_URL } from "@/app/site";
 
 export const metadata: Metadata = {
   title: "Cookies policy",
   description:
     "How LinkedIn Post Generator handles cookies, browser storage, and preferences.",
-  alternates: { canonical: "https://linkedin.gayakaci.duckdns.org/cookies" },
+  alternates: { canonical: `${SITE_URL}/cookies/` },
   openGraph: {
     title: "Cookies policy | LinkedIn Post Generator",
     description:
       "How LinkedIn Post Generator handles cookies, browser storage, and preferences.",
     type: "website",
-    url: "https://linkedin.gayakaci.duckdns.org/cookies",
+    url: `${SITE_URL}/cookies/`,
   },
   twitter: {
     card: "summary",
@@ -47,7 +48,7 @@ export default function PolicyPage() {
         These values and caches have no fixed expiry. They remain until you
         clear them, the browser removes them, or the app replaces them. Local
         storage is not automatically attached to HTTP requests, and this app
-        does not send these preferences to the server.
+        does not send these preferences anywhere.
       </p>
 
       <h2>Removing stored data</h2>
@@ -67,8 +68,8 @@ export default function PolicyPage() {
       <h2>Third parties and server logs</h2>
       <p>
         Links to external sites are governed by their policies once you follow
-        them. Server request logs are separate from browser storage and are
-        covered by the <Link href="/privacy">privacy policy</Link>.
+        them. GitHub Pages request logs are separate from browser storage and
+        are covered by the <Link href="/privacy">privacy policy</Link>.
       </p>
       <h2>Questions and changes</h2>
       <p>

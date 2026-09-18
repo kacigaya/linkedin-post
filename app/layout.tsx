@@ -3,7 +3,19 @@ import type { Metadata, Viewport } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SITE_URL } from "@/app/site";
 import "./globals.css";
+
+// GitHub Pages cannot set response headers, so the CSP ships as a meta tag.
+// `frame-ancestors` is not honoured in meta form and is left out. React needs
+// eval for development diagnostics; never grant it in production.
+const scriptSrc =
+  process.env.NODE_ENV === "development"
+    ? "'self' 'unsafe-inline' 'unsafe-eval'"
+    : "'self' 'unsafe-inline'";
+// Everything runs client-side: no remote origins to talk to, and uploaded
+// avatars/images stay as blob/data URLs in the page.
+const csp = `default-src 'self'; script-src ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' data: blob:; object-src 'none'; base-uri 'self'; form-action 'self'`;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,15 +29,19 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL + "/"),
   title: "LinkedIn Post Generator",
   description:
     "Write a LinkedIn post mockup, edit it like any other text field, and download it as a PNG. Runs in your browser.",
+  alternates: { canonical: `${SITE_URL}/` },
+  referrer: "strict-origin-when-cross-origin",
   robots: { index: true, follow: true },
   openGraph: {
     title: "LinkedIn Post Generator",
     description:
       "Build a LinkedIn post mockup and export it as a PNG. No upload, no account.",
     type: "website",
+    url: `${SITE_URL}/`,
   },
 };
 
@@ -42,6 +58,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta httpEquiv="Content-Security-Policy" content={csp} />
+      </head>
       <body className={`${inter.variable} ${geistMono.variable}`}>
         <ThemeProvider
           attribute="class"

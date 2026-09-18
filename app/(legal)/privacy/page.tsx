@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LEGAL_UPDATED } from "../updated";
+import { SITE_URL } from "@/app/site";
 
 export const metadata: Metadata = {
   title: "Privacy policy",
   description:
     "How LinkedIn Post Generator handles data, hosting requests, and your privacy.",
-  alternates: { canonical: "https://linkedin.gayakaci.duckdns.org/privacy" },
+  alternates: { canonical: `${SITE_URL}/privacy/` },
   openGraph: {
     title: "Privacy policy | LinkedIn Post Generator",
     description:
       "How LinkedIn Post Generator handles data, hosting requests, and your privacy.",
     type: "website",
-    url: "https://linkedin.gayakaci.duckdns.org/privacy",
+    url: `${SITE_URL}/privacy/`,
   },
   twitter: {
     card: "summary",
@@ -53,35 +54,30 @@ export default function PolicyPage() {
       <p>
         The backdrop and preview theme can appear in the URL as bg and theme
         parameters. These are not post text, but the URL may be included in
-        browser history and server logs when requested.
+        browser history and in GitHub’s request logs when requested.
       </p>
       <h2>Hosting and request logs</h2>
       <p>
-        This site is hosted on a VPS administered by Gaya KACI, on Oracle Cloud
-        Infrastructure in its Paris region. Serving a page requires processing
-        your IP address and request details. Oracle provides the infrastructure
-        that carries this traffic and holds the server’s data.
+        This site is a static export published on GitHub Pages, operated by
+        GitHub, Inc. Serving a page requires processing your IP address and
+        request details. GitHub carries this traffic and holds the site’s
+        files; the operator runs no server of their own for this site.
       </p>
       <p>
-        The VPS web server records request times, IP addresses, requested URLs,
-        response status and size, duration, and browser headers such as
-        User-Agent and Referer. IP masking is not enabled for this site. Request
-        bodies are not included in these access logs. Logs are used to
-        investigate errors and abuse, not to profile visitors or measure
-        audiences.
-      </p>
-      <p>
-        Access logs use size-based rotation. Rotated files are subject to the
-        server’s default limit of 10 files and 90-day age cleanup when rotation
-        runs. This is not a maximum age for every entry: the active log can
-        remain longer when traffic is low. There is no fixed 30-day deletion
-        guarantee.
+        GitHub may log visitor IP addresses and request details to meet its
+        legal obligations and to keep the service secure. Those logs belong to
+        GitHub, not to the operator, and are covered by the{" "}
+        <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">
+          GitHub General Privacy Statement
+        </a>
+        . The operator does not receive them and has no access logs of their
+        own.
       </p>
       <h2>Browser storage</h2>
       <p>
         The site remembers its theme in local storage. This is a browser
         preference, not a visitor identifier, and the app does not transmit it
-        to its server. The <Link href="/cookies">cookies policy</Link> lists
+        anywhere. The <Link href="/cookies">cookies policy</Link> lists
         storage and explains how to clear it.
       </p>
       <h2>Contact and external links</h2>

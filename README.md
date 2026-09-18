@@ -13,7 +13,7 @@ The post text is a plain `<textarea>`, not a `contenteditable` div. Backspace, D
 paste, undo, and IME input all behave the way the browser intended, which is the one thing most
 generators of this kind get wrong. There are no accounts, no uploads, and no backend.
 
-Live at [linkedin.gayakaci.duckdns.org](https://linkedin.gayakaci.duckdns.org).
+Live at [kacigaya.github.io/linkedin-post](https://kacigaya.github.io/linkedin-post/).
 
 ## Screenshots
 
@@ -51,21 +51,8 @@ Live at [linkedin.gayakaci.duckdns.org](https://linkedin.gayakaci.duckdns.org).
 - Toolchain: Bun 1.3, Node 24
 - Testing: `bun test`
 
-## Running with Docker
-
-```bash
-docker build -t linkedin-post .
-docker run -d --name linkedin-post -p 3000:3000 linkedin-post
-```
-
-Or with Compose:
-
-```bash
-docker compose up -d
-```
-
-The image is the Next.js standalone build on `node:24-bookworm-slim`, listening on port 3000.
-Nothing is written to disk at runtime, so there is no volume to keep.
+Demo posts and grey field examples are selected locally on each page load. Reset restores
+that page’s demo; examples stay fixed while editing. No post content is stored.
 
 ## Configuration
 
@@ -91,15 +78,16 @@ bun install
 bun run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+Open [http://localhost:3000/linkedin-post/](http://localhost:3000/linkedin-post/) to view the
+app. The `/linkedin-post` prefix is the GitHub Pages `basePath`; the bare root 404s.
 
 ### Validation
 
 ```bash
-bun run check      # typecheck, unit tests, production build
+bun run check      # typecheck, unit tests, static export
 bun run typecheck
 bun test app
-bun run build
+bun run build      # writes the site to out/
 ```
 
 ### Project structure
@@ -110,6 +98,7 @@ app/            # Next.js App Router entry, layout, global styles, icon
   lib/          # Count formatting, tag matching, file reading, and their tests
 components/     # SiteNav, theme provider, and the coss ui primitives
 public/         # Icon and README screenshots
+.github/        # Pages deploy workflow
 ```
 
 ## How the export works
@@ -135,8 +124,13 @@ above it, which drags the caret away from the text it should sit next to.
 
 ## Deployment
 
-Dockerfile build on Dokploy, Next.js standalone output on container port 3000, fronted by
-Caddy, redeployed by a push webhook. See [`AGENTS.md`](AGENTS.md).
+Static export (`output: "export"`) published to GitHub Pages by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to `main`. The
+workflow runs `bun run check`, uploads `out/`, and deploys it; nothing runs at request time.
+Pages cannot set response headers, so the Content Security Policy ships as a `<meta>` tag.
+
+To serve `out/` elsewhere, keep the `/linkedin-post` path prefix or change `basePath` and
+`SITE_URL` first.
 
 ## Notes
 

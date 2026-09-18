@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { PostCard, type Post } from "./components/PostCard";
 import { readAsDataUrl } from "./lib/format";
+import { applyDemo, INITIAL_EXAMPLES, isPostDirty, selectExamples } from "./lib/examples";
 
 const LINKEDIN_MAX = 3000;
 const MAX_UPLOAD_BYTES = 8_000_000;
@@ -36,22 +37,7 @@ const BACKGROUNDS = [
 
 type BackgroundId = (typeof BACKGROUNDS)[number]["id"];
 
-const DEFAULT_POST: Post = {
-  name: "Gaya Kaci",
-  headline: "Cybersecurity engineer · building small, sharp tools",
-  timestamp: "2h",
-  body: "I rebuilt the post preview this weekend.\n\nEvery generator I tried locked the preview text. Backspace did nothing and line breaks were swallowed.\n\nThis one is a plain textarea, so typing, deleting and pasting all work.\n\n#buildinpublic #webdev",
-  avatar: null,
-  avatarShape: "circle",
-  mentions: [],
-  image: null,
-  verified: true,
-  clamp: false,
-  reactions: 428,
-  comments: 37,
-  reposts: 12,
-  theme: "light",
-};
+const DEFAULT_POST = INITIAL_EXAMPLES.post;
 
 function getImageDimensions(src: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
@@ -64,6 +50,9 @@ function getImageDimensions(src: string): Promise<{ width: number; height: numbe
 
 export default function Page() {
   const [post, setPost] = useState<Post>(DEFAULT_POST);
+  const [baseline, setBaseline] = useState(DEFAULT_POST);
+  const [placeholders, setPlaceholders] = useState(INITIAL_EXAMPLES.placeholders);
+  const initialized = useRef(false);
   const [background, setBackground] = useState<BackgroundId>("grey");
   const [exporting, setExporting] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -76,7 +65,7 @@ export default function Page() {
   const bg = BACKGROUNDS.find((b) => b.id === background)!;
 
   // Warn before navigating away if the user made modifications.
-  const isDirty = JSON.stringify(post) !== JSON.stringify(DEFAULT_POST);
+  const isDirty = isPostDirty(post, baseline);
   useEffect(() => {
     if (!isDirty) return;
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -86,8 +75,11 @@ export default function Page() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
 
-  // Deep-link initial backdrop and card theme from URL search params.
+  // Randomize only after hydration; keep one selection through Strict Mode replay.
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    const examples = selectExamples();
     const params = new URLSearchParams(window.location.search);
     const bgParam = params.get("bg");
     if (bgParam && BACKGROUNDS.some((b) => b.id === bgParam)) {
@@ -95,8 +87,11 @@ export default function Page() {
     }
     const themeParam = params.get("theme");
     if (themeParam === "light" || themeParam === "dark") {
-      setPost((prev) => ({ ...prev, theme: themeParam }));
+      examples.post.theme = themeParam;
     }
+    setBaseline(examples.post);
+    setPlaceholders(examples.placeholders);
+    setPost((prev) => applyDemo(prev, DEFAULT_POST, examples.post));
   }, []);
 
   // Keep stateful UI in sync with URL search params.
@@ -232,7 +227,7 @@ export default function Page() {
               <Input
                 name="author-name"
                 autoComplete="off"
-                placeholder="Example: Gaya Kaci…"
+                placeholder={placeholders.name}
                 value={post.name}
                 onValueChange={(v) => set("name", v)}
               />
@@ -242,7 +237,7 @@ export default function Page() {
               <Input
                 name="author-headline"
                 autoComplete="off"
-                placeholder="Example: Cybersecurity engineer · building small, sharp tools…"
+                placeholder={placeholders.headline}
                 value={post.headline}
                 onValueChange={(v) => set("headline", v)}
               />
@@ -254,7 +249,7 @@ export default function Page() {
                   name="posted"
                   autoComplete="off"
                   spellCheck={false}
-                  placeholder="Example: 2h…"
+                  placeholder={placeholders.timestamp}
                   value={post.timestamp}
                   onValueChange={(v) => set("timestamp", v)}
                 />
@@ -304,7 +299,7 @@ export default function Page() {
                 className="min-h-40"
                 name="post-body"
                 autoComplete="off"
-                placeholder="Example: I rebuilt the post preview this weekend…"
+                placeholder={placeholders.body}
                 value={post.body}
                 maxLength={LINKEDIN_MAX}
                 onChange={(e) => set("body", e.target.value)}
@@ -327,6 +322,7 @@ export default function Page() {
               />
             </Field>
             <MentionsField
+              placeholder={placeholders.mention}
               mentions={post.mentions}
               onChange={(next) => set("mentions", next)}
               onDuplicate={(name) => setStatus(`“${name}” is already tagged.`)}
@@ -398,7 +394,7 @@ export default function Page() {
                 variant="ghost"
                 onClick={() => {
                   if (!window.confirm("Reset everything back to the defaults?")) return;
-                  setPost(DEFAULT_POST);
+                  setPost(baseline);
                   setStatus("Back to the defaults.");
                 }}
               >
@@ -462,10 +458,12 @@ function NumberField({
 }
 
 function MentionsField({
+  placeholder,
   mentions,
   onChange,
   onDuplicate,
 }: {
+  placeholder: string;
   mentions: string[];
   onChange: (next: string[]) => void;
   onDuplicate: (name: string) => void;
@@ -495,7 +493,7 @@ function MentionsField({
           name="mention-draft"
           autoComplete="off"
           spellCheck={false}
-          placeholder="Example: Micro Club usthb…"
+          placeholder={placeholder}
           onValueChange={setDraft}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
