@@ -115,6 +115,8 @@ export default function PolicyPage() {
       </p>
       <p>
         <Link href="/cookies">Cookies policy</Link> ·{" "}
+        <Link href="/terms">Terms of use</Link> ·{" "}
+        <Link href="/legal-notice">Legal notice</Link> ·{" "}
         <Link href="/">Back to LinkedIn Post Generator</Link>
       </p>
     </>

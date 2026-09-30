@@ -4,7 +4,7 @@ export function SiteFooter() {
   return (
     <footer className="mx-auto flex w-full max-w-6xl flex-wrap gap-4 border-t px-4 py-6 text-xs text-muted-foreground sm:px-6">
       <span>LinkedIn Post Generator</span>
-      <nav aria-label="Legal" className="flex gap-4">
+      <nav aria-label="Legal" className="flex flex-wrap gap-4">
         <Link
           href="/privacy"
           target="_blank"
@@ -20,6 +20,22 @@ export function SiteFooter() {
           className="underline underline-offset-4"
         >
           Cookies<span className="sr-only"> (opens in a new tab)</span>
+        </Link>
+        <Link
+          href="/terms"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4"
+        >
+          Terms<span className="sr-only"> (opens in a new tab)</span>
+        </Link>
+        <Link
+          href="/legal-notice"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4"
+        >
+          Legal notice<span className="sr-only"> (opens in a new tab)</span>
         </Link>
       </nav>
     </footer>
